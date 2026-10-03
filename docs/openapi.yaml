@@ -1,0 +1,772 @@
+openapi: 3.1.0
+info:
+  title: Daily Life Helper API
+  version: 0.1.0
+  description: |
+    Personal expense tracker API. Import this file into Postman.
+
+    **Local base URL:** http://localhost:4000/api/v1
+
+    After login, Postman stores the `token` httpOnly cookie automatically if cookies are enabled.
+
+servers:
+  - url: http://localhost:4000/api/v1
+    description: Local server
+  - url: http://localhost:5173/api/v1
+    description: Vite dev proxy
+
+tags:
+  - name: Health
+  - name: Auth
+  - name: Admin
+  - name: Categories
+  - name: Items
+  - name: Expenses
+  - name: Reports
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check (implemented)
+      operationId: getHealth
+      responses:
+        '200':
+          description: API and database OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login (planned)
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Sets token cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout (planned)
+      operationId: logout
+      security:
+        - cookieAuth: []
+      responses:
+        '204':
+          description: Session cleared
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Current user (planned)
+      operationId: getMe
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+  /auth/change-password:
+    post:
+      tags: [Auth]
+      summary: Change password (planned)
+      operationId: changePassword
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '204':
+          description: Password updated
+
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: List users (planned)
+      operationId: listUsers
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags: [Admin]
+      summary: Create user (planned)
+      operationId: createUser
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /admin/users/{id}:
+    patch:
+      tags: [Admin]
+      summary: Update user (planned)
+      operationId: updateUser
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags: [Admin]
+      summary: Deactivate user (planned)
+      operationId: deactivateUser
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '204':
+          description: User deactivated
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List categories (planned)
+      operationId: listCategories
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      tags: [Categories]
+      summary: Create category (planned)
+      operationId: createCategory
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+
+  /items:
+    get:
+      tags: [Items]
+      summary: List items (planned)
+      operationId: listItems
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+    post:
+      tags: [Items]
+      summary: Create item (planned)
+      operationId: createItem
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateItemRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+
+  /items/{id}/price-history:
+    get:
+      tags: [Items]
+      summary: Item price history (planned)
+      operationId: getItemPriceHistory
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceHistoryResponse'
+
+  /expenses:
+    get:
+      tags: [Expenses]
+      summary: List expenses (planned)
+      operationId: listExpenses
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: itemId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseListResponse'
+    post:
+      tags: [Expenses]
+      summary: Create expense (planned)
+      operationId: createExpense
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExpenseRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+
+  /expenses/{id}:
+    patch:
+      tags: [Expenses]
+      summary: Update expense (planned)
+      operationId: updateExpense
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateExpenseRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+    delete:
+      tags: [Expenses]
+      summary: Delete expense (planned)
+      operationId: deleteExpense
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '204':
+          description: Deleted
+
+  /reports/summary:
+    get:
+      tags: [Reports]
+      summary: Spending summary (planned)
+      operationId: getReportSummary
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: period
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [day, week, month, year]
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryReport'
+
+  /reports/by-category:
+    get:
+      tags: [Reports]
+      summary: Spending by category (planned)
+      operationId: getReportByCategory
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryReportRow'
+
+  /reports/top-items:
+    get:
+      tags: [Reports]
+      summary: Top spent items (planned)
+      operationId: getReportTopItems
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TopItemReportRow'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+
+  parameters:
+    UuidId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        database:
+          type: string
+          example: connected
+        timestamp:
+          type: string
+          format: date-time
+
+    UserRole:
+      type: string
+      enum: [user, super_admin]
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+
+    User:
+      allOf:
+        - $ref: '#/components/schemas/UserProfile'
+        - type: object
+          properties:
+            isActive:
+              type: boolean
+            createdAt:
+              type: string
+              format: date-time
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+
+    ChangePasswordRequest:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+
+    CreateUserRequest:
+      type: object
+      required: [email, password, displayName]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        displayName:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        displayName:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+        isActive:
+          type: boolean
+        password:
+          type: string
+          minLength: 8
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateCategoryRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        color:
+          type: string
+
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        unit:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateItemRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        unit:
+          type: string
+
+    PriceHistoryResponse:
+      type: object
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        points:
+          type: array
+          items:
+            type: object
+            properties:
+              spentAt:
+                type: string
+                format: date-time
+              unitPrice:
+                type: number
+              quantity:
+                type: number
+
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amountMinor:
+          type: integer
+        currency:
+          type: string
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        itemId:
+          type: string
+          format: uuid
+          nullable: true
+        quantity:
+          type: number
+          nullable: true
+        unitPrice:
+          type: number
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        spentAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateExpenseRequest:
+      type: object
+      required: [amountMinor]
+      properties:
+        amountMinor:
+          type: integer
+        currency:
+          type: string
+          default: BDT
+        categoryId:
+          type: string
+          format: uuid
+        itemId:
+          type: string
+          format: uuid
+        quantity:
+          type: number
+        unitPrice:
+          type: number
+        note:
+          type: string
+        spentAt:
+          type: string
+          format: date-time
+
+    UpdateExpenseRequest:
+      type: object
+      properties:
+        amountMinor:
+          type: integer
+        currency:
+          type: string
+        categoryId:
+          type: string
+          format: uuid
+        itemId:
+          type: string
+          format: uuid
+        quantity:
+          type: number
+        unitPrice:
+          type: number
+        note:
+          type: string
+        spentAt:
+          type: string
+          format: date-time
+
+    ExpenseListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expense'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    SummaryReport:
+      type: object
+      properties:
+        totalMinor:
+          type: integer
+        currency:
+          type: string
+        buckets:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              totalMinor:
+                type: integer
+
+    CategoryReportRow:
+      type: object
+      properties:
+        categoryId:
+          type: string
+          format: uuid
+        categoryName:
+          type: string
+        color:
+          type: string
+        totalMinor:
+          type: integer
+
+    TopItemReportRow:
+      type: object
+      properties:
+        itemId:
+          type: string
+          format: uuid
+        itemName:
+          type: string
+        totalMinor:
+          type: integer
+        purchaseCount:
+          type: integer
