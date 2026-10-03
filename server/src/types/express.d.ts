@@ -1,14 +1,10 @@
-import type { UserRole } from '../models/user.model.js';
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        email: string;
-        role: UserRole;
-      };
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: {
+      id: string;
+      email: string;
+      role: 'user' | 'super_admin';
+    };
   }
 }
 
