@@ -36,7 +36,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ApiSuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HealthResponse'
+        '500':
+          description: Database unreachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
   /auth/login:
     post:
@@ -468,12 +479,35 @@ components:
         format: uuid
 
   schemas:
-    Error:
+    ApiErrorResponse:
       type: object
-      required: [error]
+      required: [success, error]
       properties:
+        success:
+          type: boolean
+          enum: [false]
         error:
           type: string
+
+    ApiSuccessResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data: {}
+
+    PaginationMeta:
+      type: object
+      required: [total, page, limit]
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
 
     HealthResponse:
       type: object

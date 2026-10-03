@@ -1,5 +1,9 @@
 import { QueryClient } from '@tanstack/react-query';
 
+/**
+ * Global TanStack Query defaults.
+ * staleTime 60s avoids refetch storms; individual hooks can override (e.g. health uses retry: false).
+ */
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

@@ -5,6 +5,7 @@ import App from './App';
 import './index.css';
 import { queryClient } from './lib/queryClient';
 
+// Provider order: QueryClient → (future AuthProvider) → Router (in App)
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
