@@ -11,4 +11,5 @@ export const pool = new Pool({
   ssl: useSsl ? { rejectUnauthorized: false } : undefined,
 });
 
+/** Convenience wrapper for single-statement queries (no transaction). */
 export const query = (text: string, params?: unknown[]) => pool.query(text, params);

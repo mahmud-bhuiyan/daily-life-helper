@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { env } from '../config/env.js';
 import { query } from '../config/db.js';
 
+/** Default expense categories seeded for every new user. */
 const DEFAULT_CATEGORIES = [
   { name: 'Food', color: '#22c55e' },
   { name: 'Transport', color: '#3b82f6' },
@@ -11,6 +12,7 @@ const DEFAULT_CATEGORIES = [
   { name: 'Other', color: '#6366f1' },
 ];
 
+/** Inserts default categories; safe to re-run (ON CONFLICT DO NOTHING). */
 export const seedDefaultCategories = async (userId: string) => {
   for (const cat of DEFAULT_CATEGORIES) {
     await query(
@@ -22,6 +24,7 @@ export const seedDefaultCategories = async (userId: string) => {
   }
 };
 
+/** Creates the first super_admin + default categories only when users table is empty. */
 export const bootstrapSuperAdmin = async () => {
   const { rows } = await query('SELECT COUNT(*)::text AS count FROM users');
   const count = Number((rows[0] as { count: string }).count);

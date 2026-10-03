@@ -8,6 +8,7 @@ type HealthResponse = {
   timestamp: string;
 };
 
+/** GET /api/v1/health — public, no auth. retry: false to avoid spam on outage. */
 export const useHealth = () =>
   useQuery({
     queryKey: queryKeys.health,

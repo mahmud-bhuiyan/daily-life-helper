@@ -3,6 +3,7 @@ import { useHealth } from '../../hooks/queries/useHealth';
 export const HomePage = () => {
   const { data, isPending, isError, error, isFetching } = useHealth();
 
+  // Show skeleton only on first load — keep cached data visible during background refetch
   const showSkeleton = isPending && !data;
 
   return (

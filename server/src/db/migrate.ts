@@ -7,6 +7,11 @@ import { bootstrapSuperAdmin } from './seed.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const migrationsDir = join(__dirname, 'migrations');
 
+/**
+ * Runs pending .sql files in order inside a transaction per file.
+ * Idempotent via schema_migrations tracking table.
+ * Bootstraps the first super_admin when the users table is empty.
+ */
 const run = async () => {
   const client = await pool.connect();
 

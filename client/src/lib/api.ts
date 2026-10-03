@@ -1,3 +1,6 @@
+import type { ApiEnvelope } from '../types/api';
+
+/** Thrown when the API returns `{ success: false, error }` or a non-2xx status. */
 export class ApiError extends Error {
   status: number;
 
@@ -12,6 +15,22 @@ type RequestOptions = Omit<RequestInit, 'body'> & {
   body?: unknown;
 };
 
+const parseEnvelope = async <T>(res: Response): Promise<ApiEnvelope<T>> => {
+  try {
+    return (await res.json()) as ApiEnvelope<T>;
+  } catch {
+    return { success: false, error: res.statusText };
+  }
+};
+
+/**
+ * Central fetch wrapper for all API calls.
+ * - Sends credentials (httpOnly JWT cookie) on every request
+ * - JSON-encodes body when provided
+ * - Unwraps `{ success: true, data }` — callers receive `data` directly
+ * - Throws ApiError on `{ success: false, error }` or HTTP errors
+ * - Returns undefined for 204 No Content
+ */
 export const request = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
   const { body, headers, ...rest } = options;
 
@@ -25,14 +44,15 @@ export const request = async <T>(path: string, options: RequestOptions = {}): Pr
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  if (!res.ok) {
-    const payload = await res.json().catch(() => ({ error: res.statusText }));
-    throw new ApiError(res.status, payload.error ?? 'Request failed');
-  }
-
   if (res.status === 204) {
     return undefined as T;
   }
 
-  return res.json() as Promise<T>;
+  const payload = await parseEnvelope<T>(res);
+
+  if (!payload.success) {
+    throw new ApiError(res.status, payload.error);
+  }
+
+  return payload.data;
 };

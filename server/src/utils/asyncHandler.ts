@@ -6,6 +6,7 @@ type AsyncRouteHandler = (
   next: NextFunction,
 ) => Promise<void>;
 
+/** Wraps async controllers so rejected promises reach errorMiddleware. */
 export const asyncHandler = (handler: AsyncRouteHandler) =>
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(handler(req, res, next)).catch(next);

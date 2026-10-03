@@ -1,3 +1,7 @@
+/**
+ * Centralized query key factory — keep in sync with mutation invalidations.
+ * Keys are grouped by domain; list/report keys include filter params for cache separation.
+ */
 export const queryKeys = {
   auth: {
     me: ['auth', 'me'] as const,

@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
+    // Dev only — forwards /api/* to Express. Production needs same-origin or reverse proxy.
     proxy: {
       '/api': {
         target: 'http://localhost:4000',
