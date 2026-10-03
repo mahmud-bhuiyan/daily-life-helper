@@ -53,7 +53,7 @@ routes → middlewares → controller → service → model (SQL) → JSON
 - `App.tsx` = routes only; `main.tsx` = `QueryClientProvider`, `AuthProvider`, Router
 - Unauthenticated → `/login`; admin routes gated by `role === 'super_admin'`
 - Pages in `pages/<name>/` with local `components/` and hooks
-- `*Page.tsx` stays thin — data via `hooks/queries/*` (TanStack Query), not raw fetch
+- `*Page.tsx` stays thin — data via `hooks` (TanStack Query), not raw fetch
 - `lib/api.ts` + `lib/queryKeys.ts`; mutations invalidate related keys
 - **No visible refresh:** skeleton only when `isPending && !data`; keep showing cache during `isFetching`
 - Filter/pagination: `placeholderData: keepPreviousData`
@@ -66,6 +66,7 @@ Use CSS variables from `index.css`:
 - Background: `--bg`, surfaces: `--surface`, accent: `--accent`
 - Font: DM Sans
 - Modern, calm dark theme — not generic bootstrap look
+- Import from barrel `index.ts` files — `components/ui`, `components/layout`, `types`, `hooks`, `context` — not individual files
 - Reuse: `Button`, `Card`, `Modal`, `PageHeader`, `EmptyState`
 
 ### Tailwind 4 + CSS variables (required)
@@ -78,6 +79,13 @@ Use Tailwind v4 shorthand for theme tokens — **never** `[var(--token)]` in cla
 | `text-[var(--muted)]` | `text-(--muted)` |
 | `border-[var(--border)]` | `border-(--border)` |
 | `rounded-[var(--radius-card)]` | `rounded-(--radius-card)` |
+| `min-w-[720px]` | `min-w-180` (use spacing scale, not `[Npx]`) |
+| `shadow-[0_4px_24px_…]` | `@utility shadow-elevated` in `index.css`, then `shadow-elevated` |
+| `text-[11px] tracking-[0.2em]` | `.text-overline` in `index.css` |
+| `min-h-screen min-h-dvh` | Set `min-height: 100dvh` on `#root` in `index.css`; use `flex-1` on page wrappers |
+| `min-h-screen` or `min-h-dvh` on pages | `flex-1` (viewport height lives on `#root` once) |
+
+**Rule:** prefer Tailwind scale tokens (`min-w-180`, `pl-2.5`, `max-w-md`) and project `@utility` classes over arbitrary `[…]` values. Mobile-first layouts — no fixed pixel min-widths unless the view already switches to a card layout below `md`.
 
 Before finishing client UI work: run `npm run build` and `npm run lint` in `client/` — zero Tailwind class warnings.
 

@@ -1,4 +1,4 @@
-import { useHealth } from '../../hooks/queries/useHealth';
+import { useHealth } from '../../hooks';
 
 export const HomePage = () => {
   const { data, isPending, isError, error, isFetching } = useHealth();
@@ -7,7 +7,7 @@ export const HomePage = () => {
   const showSkeleton = isPending && !data;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4">
+    <div className="flex flex-1 flex-col items-center justify-center px-4">
       <div
         className="w-full max-w-lg rounded-(--radius-card) border border-(--border) bg-(--surface) p-8"
       >

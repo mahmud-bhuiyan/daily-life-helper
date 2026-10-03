@@ -1,4 +1,7 @@
-import type { ApiEnvelope } from '../types/api';
+import type { ApiEnvelope } from '../types';
+
+/** Prod: full API origin from Vercel env. Dev: empty — Vite proxy serves /api. */
+const API_BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
 /** Thrown when the API returns `{ success: false, error }` or a non-2xx status. */
 export class ApiError extends Error {
@@ -34,7 +37,7 @@ const parseEnvelope = async <T>(res: Response): Promise<ApiEnvelope<T>> => {
 export const request = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
   const { body, headers, ...rest } = options;
 
-  const res = await fetch(path, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...rest,
     credentials: 'include',
     headers: {
