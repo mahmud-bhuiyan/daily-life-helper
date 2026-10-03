@@ -1,5 +1,5 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../../hooks';
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "../../hooks";
 
 const AuthLoading = () => (
   <div className="login-bg flex items-center justify-center">

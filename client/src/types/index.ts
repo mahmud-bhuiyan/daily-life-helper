@@ -3,7 +3,7 @@ export type {
   ApiErrorResponse,
   ApiSuccessResponse,
   PaginationMeta,
-} from './api';
+} from "./api";
 export type {
   CreateUserInput,
   LoginInput,
@@ -11,4 +11,4 @@ export type {
   UserAdmin,
   UserProfile,
   UserRole,
-} from './user';
+} from "./user";

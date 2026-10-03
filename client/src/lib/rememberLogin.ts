@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'dlh_remember_login';
+const STORAGE_KEY = "dlh_remember_login";
 const TTL_MS = 24 * 60 * 60 * 1000; // 1 day
 
 type StoredLogin = {
@@ -13,7 +13,10 @@ export const clearRememberedLogin = (): void => {
 };
 
 /** Load email/password if saved within the last 24 hours; clears expired entries. */
-export const loadRememberedLogin = (): { email: string; password: string } | null => {
+export const loadRememberedLogin = (): {
+  email: string;
+  password: string;
+} | null => {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
 

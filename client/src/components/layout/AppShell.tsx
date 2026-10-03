@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import { useAuth } from '../../hooks';
-import { Button } from '../ui/Button';
-import { Sidebar } from './Sidebar';
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { useAuth } from "../../hooks";
+import { Button } from "../ui/Button";
+import { Sidebar } from "./Sidebar";
 
 const UserAvatar = ({ name }: { name: string }) => {
-  const initial = name.trim().charAt(0).toUpperCase() || '?';
+  const initial = name.trim().charAt(0).toUpperCase() || "?";
 
   return (
     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-(--accent)/15 text-sm font-semibold text-(--accent) ring-1 ring-(--accent)/25">
@@ -41,13 +41,20 @@ export const AppShell = () => {
             <div className="flex min-w-0 items-center gap-3">
               {user && <UserAvatar name={user.displayName} />}
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-(--text)">{user?.displayName}</p>
+                <p className="truncate text-sm font-medium text-(--text)">
+                  {user?.displayName}
+                </p>
                 <p className="truncate text-xs text-(--muted)">{user?.email}</p>
               </div>
             </div>
           </div>
 
-          <Button variant="ghost" size="sm" onClick={() => logout()} className="shrink-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => logout()}
+            className="shrink-0"
+          >
             Log out
           </Button>
         </header>

@@ -3,5 +3,5 @@ export {
   useCreateUser,
   useDeactivateUser,
   useUpdateUser,
-} from './useAdminUsers';
-export { useHealth } from './useHealth';
+} from "./useAdminUsers";
+export { useHealth } from "./useHealth";

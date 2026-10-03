@@ -1,12 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { request } from '../../lib/api';
-import { queryKeys } from '../../lib/queryKeys';
-import type { CreateUserInput, UpdateUserInput, UserAdmin } from '../../types';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { request } from "../../lib/api";
+import { queryKeys } from "../../lib/queryKeys";
+import type { CreateUserInput, UpdateUserInput, UserAdmin } from "../../types";
 
 export const useAdminUsers = () =>
   useQuery({
     queryKey: queryKeys.admin.users,
-    queryFn: () => request<UserAdmin[]>('/api/v1/admin/users'),
+    queryFn: () => request<UserAdmin[]>("/api/v1/admin/users"),
   });
 
 export const useCreateUser = () => {
@@ -14,7 +14,10 @@ export const useCreateUser = () => {
 
   return useMutation({
     mutationFn: (input: CreateUserInput) =>
-      request<UserAdmin>('/api/v1/admin/users', { method: 'POST', body: input }),
+      request<UserAdmin>("/api/v1/admin/users", {
+        method: "POST",
+        body: input,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.users });
     },
@@ -26,7 +29,10 @@ export const useUpdateUser = () => {
 
   return useMutation({
     mutationFn: ({ id, ...body }: UpdateUserInput & { id: string }) =>
-      request<UserAdmin>(`/api/v1/admin/users/${id}`, { method: 'PATCH', body }),
+      request<UserAdmin>(`/api/v1/admin/users/${id}`, {
+        method: "PATCH",
+        body,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.users });
     },
@@ -38,7 +44,7 @@ export const useDeactivateUser = () => {
 
   return useMutation({
     mutationFn: (id: string) =>
-      request<UserAdmin>(`/api/v1/admin/users/${id}`, { method: 'DELETE' }),
+      request<UserAdmin>(`/api/v1/admin/users/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.users });
     },

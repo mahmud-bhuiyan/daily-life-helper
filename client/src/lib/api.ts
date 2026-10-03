@@ -1,7 +1,7 @@
-import type { ApiEnvelope } from '../types';
+import type { ApiEnvelope } from "../types";
 
 /** Prod: full API origin from Vercel env. Dev: empty — Vite proxy serves /api. */
-const API_BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+const API_BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
 /** Thrown when the API returns `{ success: false, error }` or a non-2xx status. */
 export class ApiError extends Error {
@@ -9,12 +9,12 @@ export class ApiError extends Error {
 
   constructor(status: number, message: string) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
     this.status = status;
   }
 }
 
-type RequestOptions = Omit<RequestInit, 'body'> & {
+type RequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
 };
 
@@ -34,14 +34,17 @@ const parseEnvelope = async <T>(res: Response): Promise<ApiEnvelope<T>> => {
  * - Throws ApiError on `{ success: false, error }` or HTTP errors
  * - Returns undefined for 204 No Content
  */
-export const request = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
+export const request = async <T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> => {
   const { body, headers, ...rest } = options;
 
   const res = await fetch(`${API_BASE}${path}`, {
     ...rest,
-    credentials: 'include',
+    credentials: "include",
     headers: {
-      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
       ...headers,
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,

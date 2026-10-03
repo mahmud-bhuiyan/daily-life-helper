@@ -1,4 +1,4 @@
-import { useHealth } from '../../hooks';
+import { useHealth } from "../../hooks";
 
 export const HomePage = () => {
   const { data, isPending, isError, error, isFetching } = useHealth();
@@ -8,10 +8,10 @@ export const HomePage = () => {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4">
-      <div
-        className="w-full max-w-lg rounded-(--radius-card) border border-(--border) bg-(--surface) p-8"
-      >
-        <h1 className="text-2xl font-semibold tracking-tight">Daily Life Helper</h1>
+      <div className="w-full max-w-lg rounded-(--radius-card) border border-(--border) bg-(--surface) p-8">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Daily Life Helper
+        </h1>
         <p className="mt-2 text-(--muted)">
           Step 01 scaffold — server health check via TanStack Query.
         </p>

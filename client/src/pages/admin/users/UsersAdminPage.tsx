@@ -1,20 +1,23 @@
-import { useState } from 'react';
-import { PageHeader } from '../../../components/layout';
-import { Button, Card, EmptyState } from '../../../components/ui';
+import { useState } from "react";
+import { PageHeader } from "../../../components/layout";
+import { Button, Card, EmptyState } from "../../../components/ui";
 import {
   useAdminUsers,
   useAuth,
   useCreateUser,
   useDeactivateUser,
   useUpdateUser,
-} from '../../../hooks';
-import { UserFormModal } from './components/UserFormModal';
-import { UserTable } from './components/UserTable';
+} from "../../../hooks";
+import { UserFormModal } from "./components/UserFormModal";
+import { UserTable } from "./components/UserTable";
 
 const UsersSkeleton = () => (
   <div className="space-y-3 md:hidden">
     {[1, 2, 3].map((i) => (
-      <div key={i} className="h-36 animate-pulse rounded-(--radius-card) bg-(--surface)" />
+      <div
+        key={i}
+        className="h-36 animate-pulse rounded-(--radius-card) bg-(--surface)"
+      />
     ))}
   </div>
 );
@@ -68,7 +71,9 @@ export const UsersAdminPage = () => {
           onResetPassword={async (id, password) => {
             await updateUser.mutateAsync({ id, password });
           }}
-          deactivatingId={deactivateUser.isPending ? deactivateUser.variables : undefined}
+          deactivatingId={
+            deactivateUser.isPending ? deactivateUser.variables : undefined
+          }
         />
       )}
 
@@ -83,8 +88,9 @@ export const UsersAdminPage = () => {
       {data && data.length > 0 && (
         <Card className="mt-6" variant="default">
           <p className="text-sm text-(--muted)">
-            <span className="font-medium text-(--text)">{data.length}</span> total accounts ·
-            Deactivated users cannot sign in but their data is preserved.
+            <span className="font-medium text-(--text)">{data.length}</span>{" "}
+            total accounts · Deactivated users cannot sign in but their data is
+            preserved.
           </p>
         </Card>
       )}

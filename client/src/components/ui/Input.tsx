@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import type { InputHTMLAttributes, ReactNode } from "react";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
@@ -14,11 +14,11 @@ export const Input = ({
   hint,
   leadingIcon,
   trailing,
-  className = '',
+  className = "",
   id,
   ...props
 }: InputProps) => {
-  const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
+  const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -37,7 +37,7 @@ export const Input = ({
 
         <input
           id={inputId}
-          className={`min-h-11 w-full rounded-(--radius-input) border border-(--border) bg-(--bg)/80 py-2.5 text-sm text-(--text) placeholder:text-(--muted) outline-none transition-colors focus:border-(--accent) focus:ring-2 focus:ring-(--accent)/20 ${leadingIcon ? 'pl-10' : 'pl-4'} ${trailing ? 'pr-11' : 'pr-4'} ${error ? 'border-(--danger) focus:border-(--danger) focus:ring-(--danger)/20' : ''} ${className}`}
+          className={`min-h-11 w-full rounded-(--radius-input) border border-(--border) bg-(--bg)/80 py-2.5 text-sm text-(--text) placeholder:text-(--muted) outline-none transition-colors focus:border-(--accent) focus:ring-2 focus:ring-(--accent)/20 ${leadingIcon ? "pl-10" : "pl-4"} ${trailing ? "pr-11" : "pr-4"} ${error ? "border-(--danger) focus:border-(--danger) focus:ring-(--danger)/20" : ""} ${className}`}
           {...props}
         />
 

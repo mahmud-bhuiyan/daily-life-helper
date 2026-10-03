@@ -7,7 +7,7 @@ import {
   MailIcon,
   PasswordInput,
 } from "../../components/ui";
-import { useAuth } from '../../hooks';
+import { useAuth } from "../../hooks";
 import { ApiError } from "../../lib/api";
 import {
   clearRememberedLogin,

@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, type ReactNode } from "react";
 
 type ModalProps = {
   open: boolean;
@@ -11,16 +11,16 @@ export const Modal = ({ open, onClose, title, children }: ModalProps) => {
   useEffect(() => {
     if (!open) return;
 
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
 
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKeyDown);
     };
   }, [open, onClose]);
 

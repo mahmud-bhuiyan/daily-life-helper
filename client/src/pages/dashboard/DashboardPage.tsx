@@ -1,6 +1,6 @@
-import { PageHeader } from '../../components/layout';
+import { PageHeader } from "../../components/layout";
 import { Card } from "../../components/ui";
-import { useHealth } from '../../hooks';
+import { useHealth } from "../../hooks";
 
 type StatCardProps = {
   label: string;

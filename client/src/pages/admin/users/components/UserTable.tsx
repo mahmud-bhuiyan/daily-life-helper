@@ -1,5 +1,5 @@
-import { Badge, Button, Card } from '../../../../components/ui';
-import type { UserAdmin } from '../../../../types';
+import { Badge, Button, Card } from "../../../../components/ui";
+import type { UserAdmin } from "../../../../types";
 
 type UserTableProps = {
   users: UserAdmin[];
@@ -9,7 +9,7 @@ type UserTableProps = {
   deactivatingId?: string;
 };
 
-const formatRole = (role: UserAdmin['role']) => role.replace('_', ' ');
+const formatRole = (role: UserAdmin["role"]) => role.replace("_", " ");
 
 export const UserTable = ({
   users,
@@ -19,7 +19,7 @@ export const UserTable = ({
   deactivatingId,
 }: UserTableProps) => {
   const handleReset = async (id: string) => {
-    const password = window.prompt('Enter new password (min 8 characters):');
+    const password = window.prompt("Enter new password (min 8 characters):");
     if (!password || password.length < 8) return;
     await onResetPassword(id, password);
   };
@@ -35,11 +35,15 @@ export const UserTable = ({
             <Card key={user.id} padding="default">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-(--text)">{user.displayName}</p>
-                  <p className="truncate text-sm text-(--muted)">{user.email}</p>
+                  <p className="truncate font-medium text-(--text)">
+                    {user.displayName}
+                  </p>
+                  <p className="truncate text-sm text-(--muted)">
+                    {user.email}
+                  </p>
                 </div>
-                <Badge variant={user.isActive ? 'success' : 'muted'}>
-                  {user.isActive ? 'Active' : 'Inactive'}
+                <Badge variant={user.isActive ? "success" : "muted"}>
+                  {user.isActive ? "Active" : "Inactive"}
                 </Badge>
               </div>
 
@@ -63,7 +67,9 @@ export const UserTable = ({
                   size="sm"
                   className="w-full"
                   onClick={() => onDeactivate(user.id)}
-                  disabled={!user.isActive || isSelf || deactivatingId === user.id}
+                  disabled={
+                    !user.isActive || isSelf || deactivatingId === user.id
+                  }
                 >
                   Deactivate
                 </Button>
@@ -98,14 +104,20 @@ export const UserTable = ({
                     <td className="px-5 py-4 font-medium text-(--text)">
                       {user.displayName}
                       {isSelf && (
-                        <span className="ml-2 text-xs font-normal text-(--accent)">(you)</span>
+                        <span className="ml-2 text-xs font-normal text-(--accent)">
+                          (you)
+                        </span>
                       )}
                     </td>
-                    <td className="max-w-48 truncate px-5 py-4 text-(--muted)">{user.email}</td>
-                    <td className="px-5 py-4 capitalize text-(--text)">{formatRole(user.role)}</td>
+                    <td className="max-w-48 truncate px-5 py-4 text-(--muted)">
+                      {user.email}
+                    </td>
+                    <td className="px-5 py-4 capitalize text-(--text)">
+                      {formatRole(user.role)}
+                    </td>
                     <td className="px-5 py-4">
-                      <Badge variant={user.isActive ? 'success' : 'muted'}>
-                        {user.isActive ? 'Active' : 'Inactive'}
+                      <Badge variant={user.isActive ? "success" : "muted"}>
+                        {user.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </td>
                     <td className="px-5 py-4">
@@ -122,7 +134,11 @@ export const UserTable = ({
                           variant="danger"
                           size="sm"
                           onClick={() => onDeactivate(user.id)}
-                          disabled={!user.isActive || isSelf || deactivatingId === user.id}
+                          disabled={
+                            !user.isActive ||
+                            isSelf ||
+                            deactivatingId === user.id
+                          }
                         >
                           Deactivate
                         </Button>

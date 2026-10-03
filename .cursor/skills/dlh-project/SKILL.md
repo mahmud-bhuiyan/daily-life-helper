@@ -89,6 +89,17 @@ Use Tailwind v4 shorthand for theme tokens — **never** `[var(--token)]` in cla
 
 Before finishing client UI work: run `npm run build` and `npm run lint` in `client/` — zero Tailwind class warnings.
 
+### React 19 event types (required)
+
+React 19 `@types/react` deprecates types that don't match real DOM events. **Do not use deprecated event types** — fix warnings instead of ignoring them.
+
+| Deprecated | Use instead |
+|------------|-------------|
+| `FormEvent` / `FormEventHandler` | `SubmitEvent` for `onSubmit`; `ChangeEvent` for `onChange`; `SyntheticEvent` otherwise |
+| Bare `FormEvent` (no generic) | `SubmitEvent` (submitter + `HTMLFormElement` target are typed correctly) |
+
+Match existing handlers (e.g. `LoginPage.tsx` uses `SubmitEvent` on form submit).
+
 ## Module growth
 
 Future modules (habits, grocery, etc.) each get:
