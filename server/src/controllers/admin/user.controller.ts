@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import type { AuthenticatedRequest } from '../../types/auth.js';
 import {
   createNewUser,
   deactivateUser,
@@ -19,16 +20,16 @@ export const postUser = asyncHandler(async (req: Request, res: Response) => {
   sendCreated(res, user);
 });
 
-export const patchUser = asyncHandler(async (req: Request, res: Response) => {
+export const patchUser = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   const user = await updateExistingUser(
     req.params.id as string,
-    req.user!.id,
+    req.user.id,
     req.body as UpdateUserInput,
   );
   sendSuccess(res, user);
 });
 
-export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
-  const user = await deactivateUser(req.params.id as string, req.user!.id);
+export const deleteUser = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const user = await deactivateUser(req.params.id as string, req.user.id);
   sendSuccess(res, user);
 });

@@ -1,9 +1,10 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Response } from 'express';
+import type { AuthRequest } from '../types/auth.js';
 import { ApiError } from '../utils/ApiError.js';
 import { verifyToken } from '../utils/generateToken.js';
 
 /** Reads JWT from httpOnly `token` cookie and attaches req.user. */
-export const requireAuth = (req: Request, _res: Response, next: NextFunction) => {
+export const requireAuth = (req: AuthRequest, _res: Response, next: NextFunction) => {
   const token = req.cookies?.token;
 
   if (!token || typeof token !== 'string') {

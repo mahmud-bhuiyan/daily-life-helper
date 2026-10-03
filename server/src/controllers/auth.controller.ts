@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import type { AuthenticatedRequest } from '../types/auth.js';
 import { changePassword, clearAuthCookie, getMe, login } from '../services/auth.service.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -14,12 +15,12 @@ export const postLogout = asyncHandler(async (_req: Request, res: Response) => {
   res.status(204).send();
 });
 
-export const getAuthMe = asyncHandler(async (req: Request, res: Response) => {
-  const profile = await getMe(req.user!.id);
+export const getAuthMe = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const profile = await getMe(req.user.id);
   sendSuccess(res, profile);
 });
 
-export const postChangePassword = asyncHandler(async (req: Request, res: Response) => {
-  await changePassword(req.user!.id, req.body as ChangePasswordInput);
+export const postChangePassword = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  await changePassword(req.user.id, req.body as ChangePasswordInput);
   res.status(204).send();
 });
