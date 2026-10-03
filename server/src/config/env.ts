@@ -9,7 +9,16 @@ const envSchema = z.object({
   SUPER_ADMIN_EMAIL: z.email().optional(),
   SUPER_ADMIN_PASSWORD: z.string().min(8).optional(),
   SUPER_ADMIN_NAME: z.string().min(1).optional(),
-  CLIENT_URL: z.string().url().default('http://localhost:5173'),
+  // Comma-separated browser origins (prod client URL + optional Vercel preview URLs)
+  CLIENT_URL: z
+    .string()
+    .min(1)
+    .default('http://localhost:5173')
+    .transform((value) => {
+      const origins = value.split(',').map((origin) => origin.trim());
+      origins.forEach((origin) => z.url().parse(origin));
+      return origins.join(',');
+    }),
 });
 
 export const env = envSchema.parse(process.env);

@@ -6,10 +6,9 @@ export type PaginationMeta = {
   limit: number;
 };
 
-export type ApiSuccessResponse<T, M = undefined> =
-  M extends undefined
-    ? { success: true; data: T }
-    : { success: true; data: T; meta: M };
+export type ApiSuccessResponse<T, M = undefined> = M extends undefined
+  ? { success: true; data: T }
+  : { success: true; data: T; meta: M };
 
 export type ApiErrorResponse = {
   success: false;

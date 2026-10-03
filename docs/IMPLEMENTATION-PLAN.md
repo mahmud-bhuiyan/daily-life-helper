@@ -17,6 +17,7 @@ Track daily expenses, visualize spending over time, and see **item price trends*
 | Less code | Reuse before rewrite; delete dead code immediately |
 | Clarity | Readable names; comments only where intent is non-obvious |
 | Growth | Module-ready folder layout for habits, tasks, etc. later |
+| UI quality | **Modern design, fully responsive** — mobile-first layouts, touch-friendly controls, no broken views at any breakpoint |
 
 **Not building (Phase 1):** multi-tenant SaaS, OAuth/social login, file uploads, mobile app, design system library.
 
@@ -406,32 +407,45 @@ client/
 │   ├── main.tsx               # QueryClientProvider, AuthProvider, Router
 │   ├── App.tsx                # route table
 │   ├── index.css              # Tailwind + CSS variables (theme tokens)
+│   ├── types/                 # shared client types (import from index.ts)
+│   │   ├── index.ts
+│   │   ├── api.ts
+│   │   └── user.ts
 │   ├── lib/
 │   │   ├── api.ts             # fetch wrapper, credentials: include
 │   │   ├── queryClient.ts     # QueryClient + global defaults
 │   │   ├── queryKeys.ts       # centralized query key factory
 │   │   ├── format.ts          # money, dates
 │   │   └── constants.ts
-│   ├── hooks/
-│   │   ├── queries/           # useExpenses, useCategories, useReportSummary, …
+│   ├── hooks/                 # import from index.ts
+│   │   ├── index.ts
+│   │   ├── queries/
+│   │   │   ├── index.ts
+│   │   │   ├── useAdminUsers.ts
+│   │   │   └── useHealth.ts
 │   │   ├── useAuth.ts         # session via useQuery(['auth','me'])
 │   │   └── useDebouncedValue.ts
-│   ├── context/
+│   ├── context/               # import from index.ts
+│   │   ├── index.ts
 │   │   └── AuthProvider.tsx
 │   ├── components/
-│   │   ├── ui/                # reusable primitives
+│   │   ├── ui/                # reusable primitives (import from index.ts)
+│   │   │   ├── index.ts       # barrel — export all UI primitives here
 │   │   │   ├── Button.tsx
 │   │   │   ├── Input.tsx
+│   │   │   ├── PasswordInput.tsx
 │   │   │   ├── Select.tsx
 │   │   │   ├── Card.tsx
 │   │   │   ├── Badge.tsx
 │   │   │   ├── Modal.tsx
-│   │   │   └── EmptyState.tsx
+│   │   │   ├── EmptyState.tsx
+│   │   │   └── icons.tsx
 │   │   ├── charts/            # reusable chart wrappers
 │   │   │   ├── TimeSeriesChart.tsx
 │   │   │   ├── CategoryChart.tsx
 │   │   │   └── ChartShell.tsx  # title, loading, empty
-│   │   ├── layout/
+│   │   ├── layout/            # import from index.ts
+│   │   │   ├── index.ts
 │   │   │   ├── AppShell.tsx
 │   │   │   ├── Sidebar.tsx    # Users link only if role === super_admin
 │   │   │   ├── PageHeader.tsx
@@ -472,6 +486,8 @@ client/
 
 **Aesthetic:** calm, personal finance — not corporate dashboard. Dark-friendly with one accent.
 
+**Modern & fully responsive (required):** every page and component we ship must look polished on phone, tablet, and desktop. Build mobile-first with Tailwind breakpoints; tables scroll or stack on small screens; charts and forms remain usable without horizontal pinch-zoom. Sidebar collapses to a drawer on mobile (Step 06). No page ships with desktop-only layouts.
+
 | Token | Value | Usage |
 |-------|-------|-------|
 | `--bg` | `#0f1419` | Page background |
@@ -481,9 +497,11 @@ client/
 | Font | **DM Sans** (Google) | Headings + body |
 | Radius | `12px` cards, `8px` inputs | Consistent softness |
 
-**Layout:** login page (full-screen, no sidebar). Authenticated: left sidebar (Dashboard, Expenses, Items, **Users** for super_admin only, + future module stubs). Header shows display name + logout. Main area: page header + content grid.
+**Layout:** login page (full-screen, no sidebar). Authenticated: left sidebar (Dashboard, Expenses, Items, **Users** for super_admin only, + future module stubs). Header shows display name + logout. Main area: page header + content grid. On mobile: single-column content, collapsible nav, adequate tap targets (min ~44px).
 
-**Charts:** Recharts inside `ChartShell` — skeleton only on first load (`isPending`); background refetch keeps the chart visible. Empty state when `!data?.length`.
+**Responsive breakpoints:** design and test at `sm` (640px), `md` (768px), `lg` (1024px), and above. Use fluid spacing and `min-w-0` on flex children to prevent overflow.
+
+**Charts:** Recharts inside `ChartShell` — skeleton only on first load (`isPending`); background refetch keeps the chart visible. Empty state when `!data?.length`. Charts resize with container; readable axis labels on narrow viewports.
 
 **Uniqueness:** subtle gradient on summary cards; item price page shows sparkline + full chart; period toggle as pill segment control (Day | Week | Month | Year).
 
@@ -503,6 +521,8 @@ client/
 | `EmptyState` | icon + message + optional CTA |
 
 Extract when duplicated **twice** — not before.
+
+**Import rule:** import shared types, hooks, context, and components from barrel `index.ts` files (`types`, `hooks`, `context`, `components/ui`, `components/layout`). Add new exports when created.
 
 ---
 
@@ -529,6 +549,7 @@ Extract when duplicated **twice** — not before.
 - **TanStack Query** for all GETs; `useMutation` + `invalidateQueries` for writes.
 - Loading UI: `isPending && !data` only — never flash on background `isFetching`.
 - Forms: controlled inputs; validate before POST; mutation `onSuccess` closes modal + invalidates cache.
+- **Responsive UI:** mobile-first Tailwind; test layouts at common breakpoints; no horizontal page scroll on mobile except intentional table overflow containers.
 
 ### Git commits
 
@@ -577,10 +598,11 @@ Short, imperative: `add expense list page`, `fix week grouping timezone`.
 - [ ] `ItemsPage`: search items, pick item → price history chart
 - [ ] `/items/:id/price-history` API
 
-### Step 06 — Polish
+### Step 06 — Polish & responsive design
 
 - [ ] Loading / error / empty states on all pages
-- [ ] Responsive sidebar (collapse on mobile)
+- [ ] **Modern, fully responsive UI pass** — mobile drawer sidebar, fluid grids, touch-friendly controls, readable charts/tables on small screens
+- [ ] Responsive sidebar (collapse to drawer on mobile)
 - [ ] README with local setup + Neon env instructions
 
 ### Later modules (placeholders in sidebar)
@@ -638,6 +660,7 @@ npm outdated
 6. Refetching data (tab focus, filter change, after mutation) never blanks the UI or shows a full-page loader.
 7. App runs locally against Neon with under 5s page loads.
 8. Codebase follows this plan’s folder and component rules.
+9. **UI is modern and fully responsive** — usable and visually polished on phone, tablet, and desktop without layout breakage.
 
 ---
 

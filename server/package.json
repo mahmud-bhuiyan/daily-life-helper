@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=24 <25"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
@@ -33,5 +33,9 @@
     "@types/pg": "^8.23.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
+  },
+  "allowScripts": {
+    "bcrypt@6.0.0": true,
+    "esbuild@0.28.2": true
   }
 }
