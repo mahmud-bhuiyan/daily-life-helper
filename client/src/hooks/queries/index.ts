@@ -11,6 +11,6 @@ export {
   useExpenses,
   useUpdateExpense,
 } from "./useExpenses";
-export { useCreateItem, useItems } from "./useItems";
+export { useCreateItem, useItemPriceHistory, useItems } from "./useItems";
 export { useHealth } from "./useHealth";
 export { useReportByCategory, useReportSummary } from "./useReports";

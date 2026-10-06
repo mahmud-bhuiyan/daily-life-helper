@@ -594,9 +594,9 @@ Short, imperative: `add expense list page`, `fix week grouping timezone`.
 
 ### Step 05 — Item price tracking
 
-- [ ] Link expense to item; store quantity + unit_price
-- [ ] `ItemsPage`: search items, pick item → price history chart
-- [ ] `/items/:id/price-history` API
+- [x] Link expense to item; store quantity + unit_price
+- [x] `ItemsPage`: search items, pick item → price history chart
+- [x] `/items/:id/price-history` API
 
 ### Step 06 — Polish & responsive design
 

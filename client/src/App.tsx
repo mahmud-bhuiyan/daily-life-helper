@@ -3,26 +3,13 @@ import {
   AdminRoute,
   AppShell,
   GuestRoute,
-  PageHeader,
   ProtectedRoute,
 } from "./components/layout";
-import { Card } from "./components/ui";
 import { UsersAdminPage } from "./pages/admin/users/UsersAdminPage";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
 import { ExpensesPage } from "./pages/expenses/ExpensesPage";
+import { ItemsPage } from "./pages/items/ItemsPage";
 import { LoginPage } from "./pages/login/LoginPage";
-
-const PlaceholderPage = ({ title, step }: { title: string; step: string }) => (
-  <>
-    <PageHeader title={title} description={`This module ships in ${step}.`} />
-    <Card variant="highlight">
-      <p className="text-sm leading-relaxed text-(--muted)">
-        The layout, navigation, and auth shell are ready. Feature screens will
-        plug in here next.
-      </p>
-    </Card>
-  </>
-);
 
 /**
  * Route table — keep routes only here, no providers.
@@ -38,10 +25,7 @@ const App = () => (
         <Route element={<AppShell />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
-          <Route
-            path="/items"
-            element={<PlaceholderPage title="Items" step="Step 05" />}
-          />
+          <Route path="/items" element={<ItemsPage />} />
 
           <Route element={<AdminRoute />}>
             <Route path="/admin/users" element={<UsersAdminPage />} />

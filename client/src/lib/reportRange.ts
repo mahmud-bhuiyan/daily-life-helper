@@ -22,3 +22,11 @@ export const defaultReportRange = (period: ReportPeriod): { from: string; to: st
 
   return { from: from.toISOString(), to: to.toISOString() };
 };
+
+/** Default item price chart window — last 3 months. */
+export const defaultPriceHistoryRange = (): { from: string; to: string } => {
+  const to = new Date();
+  const from = new Date();
+  from.setMonth(from.getMonth() - 3);
+  return { from: from.toISOString(), to: to.toISOString() };
+};

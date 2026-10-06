@@ -53,6 +53,68 @@ export const findItemForUser = async (userId: string, itemId: string): Promise<I
   return row ? toItem(row) : null;
 };
 
+type PriceHistoryRow = {
+  spent_at: Date;
+  quantity: string | null;
+  unit_price: string | null;
+  amount_minor: string;
+};
+
+export type PriceHistoryPoint = {
+  spentAt: string;
+  unitPrice: number;
+  quantity: number | null;
+};
+
+export type ItemPriceHistory = {
+  itemId: string;
+  points: PriceHistoryPoint[];
+};
+
+const resolveUnitPrice = (row: PriceHistoryRow): number | null => {
+  if (row.unit_price !== null) {
+    return Number(row.unit_price);
+  }
+  const quantity = row.quantity === null ? null : Number(row.quantity);
+  if (quantity === null || !Number.isFinite(quantity) || quantity <= 0) {
+    return null;
+  }
+  return Number(row.amount_minor) / 100 / quantity;
+};
+
+export const getItemPriceHistoryForUser = async (
+  userId: string,
+  itemId: string,
+  from: string,
+  to: string,
+): Promise<ItemPriceHistory> => {
+  const { rows } = await query(
+    `SELECT spent_at, quantity, unit_price, amount_minor
+     FROM expenses
+     WHERE user_id = $1
+       AND item_id = $2
+       AND spent_at >= $3::timestamptz
+       AND spent_at <= $4::timestamptz
+     ORDER BY spent_at ASC`,
+    [userId, itemId, from, to],
+  );
+
+  const points: PriceHistoryPoint[] = [];
+  for (const row of rows as PriceHistoryRow[]) {
+    const unitPrice = resolveUnitPrice(row);
+    if (unitPrice === null || !Number.isFinite(unitPrice)) {
+      continue;
+    }
+    points.push({
+      spentAt: row.spent_at.toISOString(),
+      unitPrice,
+      quantity: row.quantity === null ? null : Number(row.quantity),
+    });
+  }
+
+  return { itemId, points };
+};
+
 export const createItemForUser = async (
   userId: string,
   input: { name: string; unit?: string },

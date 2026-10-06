@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { request } from "../../lib/api";
 import { queryKeys } from "../../lib/queryKeys";
-import type { CreateItemInput, Item } from "../../types";
+import type {
+  CreateItemInput,
+  Item,
+  ItemPriceHistory,
+  ItemPriceHistoryParams,
+} from "../../types";
 
 const itemsPath = (search?: string) => {
   const params = new URLSearchParams();
@@ -14,6 +19,25 @@ export const useItems = (search?: string) =>
   useQuery({
     queryKey: [...queryKeys.items.all, search ?? ""] as const,
     queryFn: () => request<Item[]>(itemsPath(search)),
+  });
+
+const priceHistoryPath = (id: string, params: ItemPriceHistoryParams) => {
+  const qs = new URLSearchParams({ from: params.from, to: params.to });
+  return `/api/v1/items/${id}/price-history?${qs}`;
+};
+
+export const useItemPriceHistory = (
+  itemId: string | undefined,
+  params: ItemPriceHistoryParams | undefined,
+) =>
+  useQuery({
+    queryKey: queryKeys.items.priceHistory(
+      itemId ?? "",
+      params?.from,
+      params?.to,
+    ),
+    queryFn: () => request<ItemPriceHistory>(priceHistoryPath(itemId!, params!)),
+    enabled: Boolean(itemId && params?.from && params?.to),
   });
 
 export const useCreateItem = () => {

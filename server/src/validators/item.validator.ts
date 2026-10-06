@@ -13,5 +13,11 @@ export const itemIdParamSchema = z.object({
   id: z.uuid(),
 });
 
+export const priceHistoryQuerySchema = z.object({
+  from: z.iso.datetime(),
+  to: z.iso.datetime(),
+});
+
 export type ListItemsQuery = z.infer<typeof listItemsQuerySchema>;
 export type CreateItemInput = z.infer<typeof createItemSchema>;
+export type PriceHistoryQuery = z.infer<typeof priceHistoryQuerySchema>;
