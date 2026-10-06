@@ -51,11 +51,13 @@ routes → middlewares → controller → service → model (SQL) → JSON
 ## Client patterns
 
 - `App.tsx` = routes only; `main.tsx` = `QueryClientProvider`, `AuthProvider`, Router
+- **State:** React Context for **auth session** (`AuthProvider` / `useAuth`); TanStack Query cache for **all API data** — never duplicate lists in Context; see plan §3.3
 - Unauthenticated → `/login`; admin routes gated by `role === 'super_admin'`
 - Pages in `pages/<name>/` with local `components/` and hooks
 - `*Page.tsx` stays thin — data via `hooks` (TanStack Query), not raw fetch
-- `lib/api.ts` + `lib/queryKeys.ts`; mutations invalidate related keys
-- **No visible refresh:** skeleton only when `isPending && !data`; keep showing cache during `isFetching`
+- `lib/api.ts` + `lib/queryKeys.ts`; mutations use optimistic cache patches + background `invalidateQueries`
+- **No visible refresh:** skeleton only when `isPending && !data`; keep showing cache during `isFetching`; close confirm modals immediately on delete
+- `AppShell` keeps `useCategories` + `useItems` subscribed so sidebar navigation reuses cache
 - Filter/pagination: `placeholderData: keepPreviousData`
 - Charts wrapped in `ChartShell` (first-load skeleton, empty, title)
 

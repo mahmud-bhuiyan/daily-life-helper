@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { useAuth } from "../../hooks";
+import { useAuth, useCategories, useItems } from "../../hooks";
 import { Button } from "../ui/Button";
 import { Sidebar } from "./Sidebar";
+
+/** Keep shared lists in the TanStack Query cache while navigating the shell. */
+const ShellQuerySubscriptions = () => {
+  useCategories();
+  useItems();
+  return null;
+};
 
 const UserAvatar = ({ name }: { name: string }) => {
   const initial = name.trim().charAt(0).toUpperCase() || "?";
@@ -19,11 +26,12 @@ export const AppShell = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="app-shell-bg flex flex-1">
+    <div className="app-shell-bg flex h-dvh min-h-0 w-full shrink-0 overflow-hidden">
+      <ShellQuerySubscriptions />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-(--shell-header-h) shrink-0 items-center justify-between gap-3 border-b border-(--border)/80 bg-(--surface)/90 px-4 backdrop-blur-md sm:px-6">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="z-30 flex h-(--shell-header-h) shrink-0 items-center justify-between gap-3 border-b border-(--border)/80 bg-(--surface)/90 px-4 backdrop-blur-md sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -59,7 +67,7 @@ export const AppShell = () => {
           </Button>
         </header>
 
-        <main className="surface-grid flex-1 px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+        <main className="surface-grid min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
           <div className="mx-auto w-full max-w-6xl animate-fade-in">
             <Outlet />
           </div>

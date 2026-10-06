@@ -1,31 +1,26 @@
 import bcrypt from 'bcrypt';
 import { env } from '../config/env.js';
 import { query } from '../config/db.js';
+import { GLOBAL_CATEGORIES } from './globalCategories.js';
 
-/** Default expense categories seeded for every new user. */
-const DEFAULT_CATEGORIES = [
-  { name: 'Food', color: '#22c55e' },
-  { name: 'Transport', color: '#3b82f6' },
-  { name: 'Utilities', color: '#f59e0b' },
-  { name: 'Shopping', color: '#a855f7' },
-  { name: 'Health', color: '#ef4444' },
-  { name: 'Other', color: '#6366f1' },
-];
-
-/** Inserts default categories; safe to re-run (ON CONFLICT DO NOTHING). */
-export const seedDefaultCategories = async (userId: string) => {
-  for (const cat of DEFAULT_CATEGORIES) {
+/** Ensures global categories exist (safe to re-run). */
+export const seedGlobalCategories = async () => {
+  for (const cat of GLOBAL_CATEGORIES) {
     await query(
       `INSERT INTO categories (user_id, name, color)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (user_id, name) DO NOTHING`,
-      [userId, cat.name, cat.color],
+       SELECT NULL, $1, $2
+       WHERE NOT EXISTS (
+         SELECT 1 FROM categories WHERE user_id IS NULL AND lower(name) = lower($1)
+       )`,
+      [cat.name, cat.color],
     );
   }
 };
 
-/** Creates the first super_admin + default categories only when users table is empty. */
+/** Creates the first super_admin only when users table is empty. */
 export const bootstrapSuperAdmin = async () => {
+  await seedGlobalCategories();
+
   const { rows } = await query('SELECT COUNT(*)::text AS count FROM users');
   const count = Number((rows[0] as { count: string }).count);
 
@@ -43,13 +38,11 @@ export const bootstrapSuperAdmin = async () => {
   const displayName = env.SUPER_ADMIN_NAME ?? 'Super Admin';
   const passwordHash = await bcrypt.hash(env.SUPER_ADMIN_PASSWORD, 12);
 
-  const { rows: users } = await query(
+  await query(
     `INSERT INTO users (email, password_hash, display_name, role)
-     VALUES ($1, $2, $3, 'super_admin')
-     RETURNING id`,
+     VALUES ($1, $2, $3, 'super_admin')`,
     [env.SUPER_ADMIN_EMAIL, passwordHash, displayName],
   );
 
-  await seedDefaultCategories((users[0] as { id: string }).id);
   console.log(`Bootstrap super admin: ${env.SUPER_ADMIN_EMAIL}`);
 };

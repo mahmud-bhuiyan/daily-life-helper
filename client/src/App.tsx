@@ -7,6 +7,7 @@ import {
 } from "./components/layout";
 import { UsersAdminPage } from "./pages/admin/users/UsersAdminPage";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
+import { CategoriesPage } from "./pages/categories/CategoriesPage";
 import { ExpensesPage } from "./pages/expenses/ExpensesPage";
 import { ItemsPage } from "./pages/items/ItemsPage";
 import { LoginPage } from "./pages/login/LoginPage";
@@ -25,6 +26,7 @@ const App = () => (
         <Route element={<AppShell />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/items" element={<ItemsPage />} />
 
           <Route element={<AdminRoute />}>

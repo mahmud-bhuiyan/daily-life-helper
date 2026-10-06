@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChartShell, TimeSeriesChart } from "../../components/charts";
 import { PageHeader } from "../../components/layout";
+import { ErrorBanner } from "../../components/ui";
 import { useReportSummary } from "../../hooks";
 import { defaultReportRange } from "../../lib/reportRange";
 import type { ReportPeriod } from "../../types";
@@ -38,16 +39,12 @@ export const DashboardPage = () => {
       />
 
       {isError && !data ? (
-        <div className="rounded-(--radius-card) border border-(--danger)/40 bg-(--danger)/10 px-4 py-3 text-sm text-(--text)">
-          {error instanceof Error ? error.message : "Failed to load report"}
-          <button
-            type="button"
-            className="ml-3 text-(--accent) underline"
-            onClick={() => refetch()}
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorBanner
+          message={
+            error instanceof Error ? error.message : "Failed to load report"
+          }
+          onRetry={() => refetch()}
+        />
       ) : (
         <>
           <SummaryCards

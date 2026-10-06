@@ -14,6 +14,7 @@ const navItems: Array<{
 }> = [
   { to: "/dashboard", label: "Dashboard", end: true },
   { to: "/expenses", label: "Expenses" },
+  { to: "/categories", label: "Categories" },
   { to: "/items", label: "Items" },
   { to: "/admin/users", label: "Users", adminOnly: true },
 ];
@@ -43,7 +44,7 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-(--border) bg-(--surface) shadow-2xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:w-64 lg:shrink-0 lg:translate-x-0 lg:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-72 flex-col border-r border-(--border) bg-(--surface) shadow-2xl transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:z-auto lg:w-64 lg:shrink-0 lg:translate-x-0 lg:self-start lg:shadow-none ${
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
         aria-label="Main navigation"

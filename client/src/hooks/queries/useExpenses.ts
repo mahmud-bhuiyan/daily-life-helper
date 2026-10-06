@@ -4,7 +4,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { request, requestPaginated } from "../../lib/api";
+import { request, requestPaginated, type PaginatedResponse } from "../../lib/api";
+import { restoreQuerySnapshots, snapshotQueryData } from "../../lib/queryCache";
 import { queryKeys } from "../../lib/queryKeys";
 import type {
   CreateExpenseInput,
@@ -35,6 +36,26 @@ const expensesPath = (filters: ExpenseListFilters) => {
   return `/api/v1/expenses?${params.toString()}`;
 };
 
+const patchExpenseLists = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  patch: (expenses: Expense[]) => Expense[],
+) => {
+  queryClient.setQueriesData<PaginatedResponse<Expense[]>>(
+    { queryKey: ["expenses"] },
+    (old) => {
+      if (!old) return old;
+      const next = patch(old.data);
+      const removed = old.data.length - next.length;
+      return {
+        data: next,
+        meta: removed
+          ? { ...old.meta, total: Math.max(0, old.meta.total - removed) }
+          : old.meta,
+      };
+    },
+  );
+};
+
 export const useExpenses = (filters: ExpenseListFilters) =>
   useQuery({
     queryKey: queryKeys.expenses.list(filtersToRecord(filters)),
@@ -48,9 +69,22 @@ export const useCreateExpense = () => {
   return useMutation({
     mutationFn: (input: CreateExpenseInput) =>
       request<Expense>("/api/v1/expenses", { method: "POST", body: input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
-      queryClient.invalidateQueries({ queryKey: ["reports"] });
+    onSuccess: (created) => {
+      queryClient.setQueriesData<PaginatedResponse<Expense[]>>(
+        { queryKey: ["expenses"] },
+        (old) => {
+          if (!old || old.data.some((e) => e.id === created.id)) return old;
+          return {
+            data: [created, ...old.data].slice(0, old.meta.limit),
+            meta: { ...old.meta, total: old.meta.total + 1 },
+          };
+        },
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["reports"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: queryKeys.items.all, refetchType: "active" });
     },
   });
 };
@@ -61,9 +95,30 @@ export const useUpdateExpense = () => {
   return useMutation({
     mutationFn: ({ id, ...body }: UpdateExpenseInput & { id: string }) =>
       request<Expense>(`/api/v1/expenses/${id}`, { method: "PATCH", body }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
-      queryClient.invalidateQueries({ queryKey: ["reports"] });
+    onMutate: async ({ id, ...body }) => {
+      await queryClient.cancelQueries({ queryKey: ["expenses"] });
+      const snapshots = snapshotQueryData<PaginatedResponse<Expense[]>>(
+        queryClient,
+        ["expenses"],
+      );
+      patchExpenseLists(queryClient, (expenses) =>
+        expenses.map((expense) =>
+          expense.id === id ? { ...expense, ...body } : expense,
+        ),
+      );
+      return { snapshots };
+    },
+    onSuccess: (updated) => {
+      patchExpenseLists(queryClient, (expenses) =>
+        expenses.map((expense) => (expense.id === updated.id ? updated : expense)),
+      );
+    },
+    onError: (_err, _input, context) => {
+      restoreQuerySnapshots(queryClient, context?.snapshots);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["reports"], refetchType: "active" });
     },
   });
 };
@@ -74,9 +129,23 @@ export const useDeleteExpense = () => {
   return useMutation({
     mutationFn: (id: string) =>
       request<void>(`/api/v1/expenses/${id}`, { method: "DELETE" }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
-      queryClient.invalidateQueries({ queryKey: ["reports"] });
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["expenses"] });
+      const snapshots = snapshotQueryData<PaginatedResponse<Expense[]>>(
+        queryClient,
+        ["expenses"],
+      );
+      patchExpenseLists(queryClient, (expenses) =>
+        expenses.filter((expense) => expense.id !== id),
+      );
+      return { snapshots };
+    },
+    onError: (_err, _id, context) => {
+      restoreQuerySnapshots(queryClient, context?.snapshots);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"], refetchType: "active" });
+      queryClient.invalidateQueries({ queryKey: ["reports"], refetchType: "active" });
     },
   });
 };

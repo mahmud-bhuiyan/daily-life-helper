@@ -58,6 +58,41 @@ export const EyeIcon = ({ className = "h-4 w-4" }: IconProps) => (
   </svg>
 );
 
+export const PencilIcon = ({ className = "h-4 w-4" }: IconProps) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    aria-hidden
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+    />
+  </svg>
+);
+
+export const TrashIcon = ({ className = "h-4 w-4" }: IconProps) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    aria-hidden
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 3.75h6M4.5 7h15M7.5 7l.9 11.25A1.5 1.5 0 009.89 19.5h4.22a1.5 1.5 0 001.49-1.25L16.5 7"
+    />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10 10.5v5.25M14 10.5v5.25" />
+  </svg>
+);
+
 export const EyeOffIcon = ({ className = "h-4 w-4" }: IconProps) => (
   <svg
     className={className}

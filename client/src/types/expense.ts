@@ -1,12 +1,21 @@
+export type CategoryScope = "global" | "user";
+
 export type Category = {
   id: string;
   name: string;
   color: string;
+  scope: CategoryScope;
   createdAt: string;
 };
 
 export type CreateCategoryInput = {
   name: string;
+  color?: string;
+  scope?: CategoryScope;
+};
+
+export type UpdateCategoryInput = {
+  name?: string;
   color?: string;
 };
 

@@ -19,8 +19,10 @@ export const PageHeader = ({ title, description, action }: PageHeaderProps) => (
       )}
     </div>
     {action && (
-      <div className="shrink-0 [&>button]:w-full sm:[&>button]:w-auto">
-        {action}
+      <div className="w-full min-w-0 overflow-x-auto sm:w-auto sm:shrink-0">
+        <div className="w-max max-w-full [&>button]:w-full sm:[&>button]:w-auto">
+          {action}
+        </div>
       </div>
     )}
   </div>

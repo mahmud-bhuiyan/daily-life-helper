@@ -23,7 +23,7 @@ import { reportRoutes } from './report.routes.js';
  *   report.routes.ts     — GET /reports/summary, /by-category, /top-items
  *
  * Planned (Step 05+):
- *   item.routes.ts       — GET /items/:id/price-history
+ *   (none — item price-history is live)
  *
  * Full request/response specs: docs/openapi.yaml
  */

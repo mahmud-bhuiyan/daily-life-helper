@@ -3,6 +3,8 @@ export {
   useAdminUsers,
   useCategories,
   useCreateCategory,
+  useDeleteCategory,
+  useUpdateCategory,
   useCreateExpense,
   useCreateItem,
   useCreateUser,

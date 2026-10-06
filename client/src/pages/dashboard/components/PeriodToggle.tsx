@@ -14,7 +14,7 @@ type PeriodToggleProps = {
 
 export const PeriodToggle = ({ value, onChange }: PeriodToggleProps) => (
   <div
-    className="inline-flex flex-wrap gap-1 rounded-(--radius-input) border border-(--border) bg-(--surface) p-1"
+    className="inline-flex max-w-full flex-wrap gap-1 rounded-(--radius-input) border border-(--border) bg-(--surface) p-1"
     role="group"
     aria-label="Report period"
   >

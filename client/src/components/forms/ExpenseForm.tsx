@@ -1,15 +1,19 @@
 import { useState, type SubmitEvent } from "react";
-import { Button, Input, Select } from "../ui";
+import { Button, Input } from "../ui";
 import {
   useCategories,
+  useCreateCategory,
   useCreateItem,
   useItems,
 } from "../../hooks";
+import { CategorySelect } from "./CategorySelect";
+import { ItemSelect } from "./ItemSelect";
 import {
   fromDateTimeLocalValue,
   parseMoneyToMinor,
   toDateTimeLocalValue,
 } from "../../lib/format";
+import { categoryNameError } from "../../lib/categories";
 import type { CreateExpenseInput, Expense, UpdateExpenseInput } from "../../types";
 
 type ExpenseFormProps = {
@@ -22,6 +26,7 @@ export const ExpenseForm = ({ initial, onSubmit, onCancel }: ExpenseFormProps) =
   const { data: categories = [] } = useCategories();
   const { data: items = [] } = useItems();
   const createItem = useCreateItem();
+  const createCategory = useCreateCategory();
 
   const [amount, setAmount] = useState(() =>
     initial ? String(initial.amountMinor / 100) : "",
@@ -40,24 +45,33 @@ export const ExpenseForm = ({ initial, onSubmit, onCancel }: ExpenseFormProps) =
       ? toDateTimeLocalValue(initial.spentAt)
       : toDateTimeLocalValue(new Date().toISOString()),
   );
-  const [newItemName, setNewItemName] = useState("");
-  const [newItemUnit, setNewItemUnit] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleCreateItem = async () => {
-    if (!newItemName.trim()) return;
+  const handleCreateCategory = async (name: string) => {
+    setError("");
+    const nameErr = categoryNameError(name);
+    if (nameErr) {
+      setError(nameErr);
+      throw new Error(nameErr);
+    }
+    try {
+      const category = await createCategory.mutateAsync({ name });
+      setCategoryId(category.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create category");
+      throw err;
+    }
+  };
+
+  const handleCreateItem = async (name: string, unit?: string) => {
     setError("");
     try {
-      const item = await createItem.mutateAsync({
-        name: newItemName.trim(),
-        unit: newItemUnit.trim() || undefined,
-      });
+      const item = await createItem.mutateAsync({ name, unit });
       setItemId(item.id);
-      setNewItemName("");
-      setNewItemUnit("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create item");
+      throw err;
     }
   };
 
@@ -112,60 +126,29 @@ export const ExpenseForm = ({ initial, onSubmit, onCancel }: ExpenseFormProps) =
         placeholder="0.00"
       />
 
-      <Select
+      <CategorySelect
         label="Category"
         value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
-      >
-        <option value="">None</option>
-        {categories.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </Select>
+        onChange={setCategoryId}
+        categories={categories}
+        allowNone
+        noneLabel="None"
+        allowCreate
+        onCreateCategory={handleCreateCategory}
+        creating={createCategory.isPending}
+      />
 
-      <Select
+      <ItemSelect
         label="Item (optional)"
         value={itemId}
-        onChange={(e) => setItemId(e.target.value)}
-      >
-        <option value="">None</option>
-        {items.map((item) => (
-          <option key={item.id} value={item.id}>
-            {item.name}
-            {item.unit ? ` (${item.unit})` : ""}
-          </option>
-        ))}
-      </Select>
-
-      <div className="rounded-(--radius-input) border border-(--border) bg-(--bg)/40 p-3">
-        <p className="text-xs font-medium text-(--muted)">Quick add item</p>
-        <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-end">
-          <Input
-            label="Name"
-            value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}
-            className="flex-1"
-          />
-          <Input
-            label="Unit"
-            value={newItemUnit}
-            onChange={(e) => setNewItemUnit(e.target.value)}
-            placeholder="kg, pcs"
-            className="sm:w-28"
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleCreateItem}
-            disabled={createItem.isPending || !newItemName.trim()}
-            className="w-full sm:w-auto"
-          >
-            {createItem.isPending ? "Adding…" : "Add item"}
-          </Button>
-        </div>
-      </div>
+        onChange={setItemId}
+        items={items}
+        allowNone
+        noneLabel="None"
+        allowCreate
+        onCreateItem={handleCreateItem}
+        creating={createItem.isPending}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Input

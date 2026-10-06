@@ -19,6 +19,36 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border) 85%, var(--muted));
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 html {
@@ -51,7 +81,7 @@ body {
 }
 
 .app-shell-bg {
-  min-height: 100dvh;
+  height: 100dvh;
   background-color: var(--bg);
   background-image:
     radial-gradient(ellipse 90% 60% at 50% -30%, rgba(34, 197, 94, 0.1), transparent),

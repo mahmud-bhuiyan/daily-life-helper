@@ -1,11 +1,11 @@
-import { Badge, Button, Card } from "../../../components/ui";
+import { Badge, Button, Card, PencilIcon, TrashIcon } from "../../../components/ui";
 import { formatMoney, formatSpentAt } from "../../../lib/format";
 import type { Expense } from "../../../types";
 
 type ExpenseTableProps = {
   expenses: Expense[];
   onEdit: (expense: Expense) => void;
-  onDelete: (id: string) => void;
+  onDelete: (expense: Expense) => void;
   deletingId?: string;
 };
 
@@ -38,23 +38,25 @@ export const ExpenseTable = ({
             <p className="mt-1 text-sm text-(--muted)">{expense.note}</p>
           )}
 
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-4 flex gap-2">
             <Button
               variant="ghost"
               size="sm"
-              className="w-full"
+              className="px-2.5"
               onClick={() => onEdit(expense)}
+              aria-label="Edit expense"
             >
-              Edit
+              <PencilIcon />
             </Button>
             <Button
-              variant="danger"
+              variant="ghost"
               size="sm"
-              className="w-full"
-              onClick={() => onDelete(expense.id)}
+              className="px-2.5 text-(--danger) hover:border-(--danger)/30 hover:bg-(--danger)/10"
+              onClick={() => onDelete(expense)}
               disabled={deletingId === expense.id}
+              aria-label="Delete expense"
             >
-              Delete
+              <TrashIcon />
             </Button>
           </div>
         </Card>
@@ -93,17 +95,25 @@ export const ExpenseTable = ({
                 {expense.note ?? "—"}
               </td>
               <td className="px-4 py-3">
-                <div className="flex justify-end gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => onEdit(expense)}>
-                    Edit
+                <div className="flex justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="px-2.5"
+                    onClick={() => onEdit(expense)}
+                    aria-label="Edit expense"
+                  >
+                    <PencilIcon />
                   </Button>
                   <Button
-                    variant="danger"
+                    variant="ghost"
                     size="sm"
-                    onClick={() => onDelete(expense.id)}
+                    className="px-2.5 text-(--danger) hover:border-(--danger)/30 hover:bg-(--danger)/10"
+                    onClick={() => onDelete(expense)}
                     disabled={deletingId === expense.id}
+                    aria-label="Delete expense"
                   >
-                    Delete
+                    <TrashIcon />
                   </Button>
                 </div>
               </td>
