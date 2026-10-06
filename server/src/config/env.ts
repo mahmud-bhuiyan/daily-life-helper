@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { z } from 'zod';
 
 const envSchema = z.object({
+  APP_ENV: z.enum(['development', 'production']).default('development'),
   DATABASE_URL: z.string().min(1),
   PORT: z.coerce.number().default(4000),
   JWT_SECRET: z.string().min(32), // required now; used once auth routes land in Step 02

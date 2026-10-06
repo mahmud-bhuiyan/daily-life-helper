@@ -1,10 +1,20 @@
+import dns from 'node:dns';
+import net from 'node:net';
 import pg from 'pg';
 import { env } from './env.js';
+
+const isLocalDb = env.DATABASE_URL.includes('localhost');
+
+// Local dev only: Node 20+ autoSelectFamily + pg's socket.connect(port, host) can ETIMEDOUT when IPv6 is unreachable.
+if (env.APP_ENV === 'development' && !isLocalDb) {
+  dns.setDefaultResultOrder('ipv4first');
+  net.setDefaultAutoSelectFamily(false);
+}
 
 const { Pool } = pg;
 
 // Neon and other remote Postgres hosts need SSL; local dev typically does not
-const useSsl = !env.DATABASE_URL.includes('localhost');
+const useSsl = !isLocalDb;
 
 export const pool = new Pool({
   connectionString: env.DATABASE_URL,
