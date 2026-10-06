@@ -50,6 +50,7 @@ export const useCreateExpense = () => {
       request<Expense>("/api/v1/expenses", { method: "POST", body: input }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
     },
   });
 };
@@ -62,6 +63,7 @@ export const useUpdateExpense = () => {
       request<Expense>(`/api/v1/expenses/${id}`, { method: "PATCH", body }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
     },
   });
 };
@@ -74,6 +76,7 @@ export const useDeleteExpense = () => {
       request<void>(`/api/v1/expenses/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
     },
   });
 };

@@ -89,10 +89,10 @@ export const LoginPage = () => {
         <Card variant="glass">
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <Input
+              label="Email"
               type="email"
               autoComplete="email"
               inputMode="email"
-              aria-label="Email"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -100,8 +100,8 @@ export const LoginPage = () => {
               required
             />
             <PasswordInput
+              label="Password"
               autoComplete="current-password"
-              aria-label="Password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

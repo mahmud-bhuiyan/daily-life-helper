@@ -1,4 +1,5 @@
 import type { InputHTMLAttributes, ReactNode } from "react";
+import { FieldLabel } from "./FieldLabel";
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
@@ -16,6 +17,7 @@ export const Input = ({
   trailing,
   className = "",
   id,
+  required,
   ...props
 }: InputProps) => {
   const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
@@ -23,9 +25,9 @@ export const Input = ({
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-(--text)">
+        <FieldLabel htmlFor={inputId} required={required}>
           {label}
-        </label>
+        </FieldLabel>
       )}
 
       <div className="relative">
@@ -37,6 +39,7 @@ export const Input = ({
 
         <input
           id={inputId}
+          required={required}
           className={`min-h-11 w-full rounded-(--radius-input) border border-(--border) bg-(--bg)/80 py-2.5 text-sm text-(--text) placeholder:text-(--muted) outline-none transition-colors focus:border-(--accent) focus:ring-2 focus:ring-(--accent)/20 ${leadingIcon ? "pl-10" : "pl-4"} ${trailing ? "pr-11" : "pr-4"} ${error ? "border-(--danger) focus:border-(--danger) focus:ring-(--danger)/20" : ""} ${className}`}
           {...props}
         />

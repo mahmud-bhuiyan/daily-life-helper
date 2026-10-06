@@ -588,9 +588,9 @@ Short, imperative: `add expense list page`, `fix week grouping timezone`.
 
 ### Step 04 — Time reports
 
-- [ ] `/reports/summary` with period grouping
-- [ ] `DashboardPage`: summary cards + `TimeSeriesChart`
-- [ ] `PeriodToggle` (day/week/month/year)
+- [x] `/reports/summary` with period grouping
+- [x] `DashboardPage`: summary cards + `TimeSeriesChart`
+- [x] `PeriodToggle` (day/week/month/year)
 
 ### Step 05 — Item price tracking
 

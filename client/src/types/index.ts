@@ -15,6 +15,13 @@ export type {
   UpdateExpenseInput,
 } from "./expense";
 export type {
+  CategoryReportRow,
+  ReportBucket,
+  ReportPeriod,
+  SummaryReport,
+  SummaryReportParams,
+} from "./report";
+export type {
   CreateUserInput,
   LoginInput,
   UpdateUserInput,

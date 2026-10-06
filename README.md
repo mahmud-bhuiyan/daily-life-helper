@@ -15,7 +15,7 @@ React 19 · Vite 8 · TanStack Query 5 · Node 24 LTS · Express 5 · PostgreSQL
 
 ## Status
 
-**Step 03 (Expenses CRUD)** — complete. Next: Time reports (dashboard charts).
+**Step 04 (Time reports)** — complete. Next: Item price tracking (Step 05).
 
 ## Quick start
 

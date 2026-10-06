@@ -5,6 +5,7 @@ import { categoryRoutes } from './category.routes.js';
 import { expenseRoutes } from './expense.routes.js';
 import { healthRoutes } from './health.routes.js';
 import { itemRoutes } from './item.routes.js';
+import { reportRoutes } from './report.routes.js';
 
 /**
  * Central API router — all endpoints live under /api/v1.
@@ -19,9 +20,10 @@ import { itemRoutes } from './item.routes.js';
  *   item.routes.ts       — GET/POST /items
  *   expense.routes.ts    — GET/POST /expenses, PATCH/DELETE /expenses/:id
  *
- * Planned (Step 04+):
- *   item.routes.ts       — GET /items/:id/price-history
  *   report.routes.ts     — GET /reports/summary, /by-category, /top-items
+ *
+ * Planned (Step 05+):
+ *   item.routes.ts       — GET /items/:id/price-history
  *
  * Full request/response specs: docs/openapi.yaml
  */
@@ -33,3 +35,4 @@ apiRouter.use(adminUserRoutes);
 apiRouter.use(categoryRoutes);
 apiRouter.use(itemRoutes);
 apiRouter.use(expenseRoutes);
+apiRouter.use(reportRoutes);
