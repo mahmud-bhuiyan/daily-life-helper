@@ -1,93 +1,80 @@
+import { useMemo, useState } from "react";
+import { ChartShell, TimeSeriesChart } from "../../components/charts";
 import { PageHeader } from "../../components/layout";
-import { Card } from "../../components/ui";
-import { useHealth } from "../../hooks";
+import { useReportSummary } from "../../hooks";
+import { defaultReportRange } from "../../lib/reportRange";
+import type { ReportPeriod } from "../../types";
+import { PeriodToggle } from "./components/PeriodToggle";
+import { SummaryCards } from "./components/SummaryCards";
 
-type StatCardProps = {
-  label: string;
-  value: string;
-  variant?: "default" | "highlight";
-  loading?: boolean;
+const periodSubtitle: Record<ReportPeriod, string> = {
+  day: "Daily totals for the last 30 days",
+  week: "Weekly totals for the last 12 weeks",
+  month: "Monthly totals for the last 12 months",
+  year: "Yearly totals for the last 5 years",
 };
 
-const StatCard = ({
-  label,
-  value,
-  variant = "default",
-  loading,
-}: StatCardProps) => (
-  <Card variant={variant === "highlight" ? "highlight" : "default"}>
-    <p className="text-xs font-medium uppercase tracking-wider text-(--muted)">
-      {label}
-    </p>
-    {loading ? (
-      <div className="mt-3 h-8 w-24 animate-pulse rounded-(--radius-input) bg-(--surface-hover)" />
-    ) : (
-      <p
-        className={`mt-2 text-2xl font-semibold tracking-tight sm:text-3xl ${
-          variant === "highlight" ? "text-(--accent)" : "text-(--text)"
-        }`}
-      >
-        {value}
-      </p>
-    )}
-  </Card>
-);
-
 export const DashboardPage = () => {
-  const { data, isPending, isError } = useHealth();
+  const [period, setPeriod] = useState<ReportPeriod>("month");
+  const range = useMemo(() => defaultReportRange(period), [period]);
+
+  const { data, isPending, isError, error, refetch } = useReportSummary({
+    period,
+    ...range,
+  });
+
   const loading = isPending && !data;
+  const buckets = data?.buckets ?? [];
+  const bucketCount = buckets.length;
+  const averageMinor =
+    bucketCount > 0 ? Math.round((data?.totalMinor ?? 0) / bucketCount) : 0;
 
   return (
     <>
       <PageHeader
         title="Dashboard"
-        description="Your spending overview and charts will appear here in Step 04."
+        description="Spending over time — switch period to regroup the chart."
+        action={<PeriodToggle value={period} onChange={setPeriod} />}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard
-          label="API status"
-          value={isError ? "Unreachable" : (data?.status ?? "—")}
-          loading={loading}
-        />
-        <StatCard
-          label="Database"
-          value={data?.database ?? "—"}
-          loading={loading}
-        />
-        <StatCard
-          label="Next up"
-          value="Expenses"
-          variant="highlight"
-          loading={false}
-        />
-      </div>
+      {isError && !data ? (
+        <div className="rounded-(--radius-card) border border-(--danger)/40 bg-(--danger)/10 px-4 py-3 text-sm text-(--text)">
+          {error instanceof Error ? error.message : "Failed to load report"}
+          <button
+            type="button"
+            className="ml-3 text-(--accent) underline"
+            onClick={() => refetch()}
+          >
+            Retry
+          </button>
+        </div>
+      ) : (
+        <>
+          <SummaryCards
+            totalMinor={data?.totalMinor ?? 0}
+            currency={data?.currency ?? "BDT"}
+            expenseCount={data?.expenseCount ?? 0}
+            averageMinor={averageMinor}
+            loading={loading}
+          />
 
-      <Card
-        className="mt-6"
-        header={
-          <span className="text-sm font-medium text-(--text)">
-            Getting started
-          </span>
-        }
-      >
-        <ul className="space-y-3 text-sm text-(--muted)">
-          <li className="flex gap-3">
-            <span className="mt-0.5 text-(--accent)">✓</span>
-            <span>Auth and user management are ready</span>
-          </li>
-          <li className="flex gap-3">
-            <span className="mt-0.5 text-(--muted)">○</span>
-            <span>Add expenses with categories and items (Step 03)</span>
-          </li>
-          <li className="flex gap-3">
-            <span className="mt-0.5 text-(--muted)">○</span>
-            <span>
-              View spending charts by day, week, month, or year (Step 04)
-            </span>
-          </li>
-        </ul>
-      </Card>
+          <div className="mt-6">
+            <ChartShell
+              title="Spending over time"
+              subtitle={periodSubtitle[period]}
+              loading={loading}
+              empty={
+                !loading &&
+                buckets.every((bucket) => bucket.totalMinor === 0)
+              }
+            >
+              {data && (
+                <TimeSeriesChart buckets={data.buckets} currency={data.currency} />
+              )}
+            </ChartShell>
+          </div>
+        </>
+      )}
     </>
   );
 };

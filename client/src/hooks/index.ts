@@ -11,6 +11,7 @@ export {
   useExpenses,
   useHealth,
   useItems,
+  useReportSummary,
   useUpdateExpense,
   useUpdateUser,
 } from "./queries";

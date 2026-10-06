@@ -84,6 +84,7 @@ export const UserFormModal = ({
           label="Role"
           value={role}
           onChange={(e) => setRole(e.target.value as UserRole)}
+          required
         >
           <option value="user">User</option>
           <option value="super_admin">Super admin</option>
