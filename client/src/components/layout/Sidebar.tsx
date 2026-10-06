@@ -48,11 +48,11 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
         }`}
         aria-label="Main navigation"
       >
-        <div className="border-b border-(--border) px-5 py-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
+        <div className="flex h-(--shell-header-h) shrink-0 items-center border-b border-(--border)/80 px-5">
+          <div className="flex w-full items-center justify-between gap-3">
+            <div className="leading-tight">
               <p className="text-overline text-(--accent)">Daily Life</p>
-              <p className="mt-1 text-xl font-semibold tracking-tight text-(--text)">
+              <p className="mt-0.5 text-xl font-semibold tracking-tight text-(--text)">
                 Helper
               </p>
             </div>

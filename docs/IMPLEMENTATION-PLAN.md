@@ -573,18 +573,18 @@ Short, imperative: `add expense list page`, `fix week grouping timezone`.
 
 ### Step 02 — Auth & user management
 
-- [ ] Auth routes: login, logout, me, change-password
-- [ ] `requireAuth` + `requireSuperAdmin` middleware on all protected routes
-- [ ] Admin user CRUD (`/admin/users`)
-- [ ] `LoginPage`, `AuthProvider`, `ProtectedRoute`
-- [ ] `UsersAdminPage` (super_admin): list, add user, deactivate, reset password
-- [ ] Sidebar: show **Users** only for super_admin; logout in header
+- [x] Auth routes: login, logout, me, change-password
+- [x] `requireAuth` + `requireSuperAdmin` middleware on all protected routes
+- [x] Admin user CRUD (`/admin/users`)
+- [x] `LoginPage`, `AuthProvider`, `ProtectedRoute`
+- [x] `UsersAdminPage` (super_admin): list, add user, deactivate, reset password
+- [x] Sidebar: show **Users** only for super_admin; logout in header
 
 ### Step 03 — Expenses CRUD
 
-- [ ] Expense + category + item API routes
-- [ ] `ExpenseForm` + `ExpensesPage` table with filters
-- [ ] `lib/format.ts` for money display
+- [x] Expense + category + item API routes
+- [x] `ExpenseForm` + `ExpensesPage` table with filters
+- [x] `lib/format.ts` for money display
 
 ### Step 04 — Time reports
 

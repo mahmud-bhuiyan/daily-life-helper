@@ -1,4 +1,4 @@
-import type { ApiEnvelope } from "../types";
+import type { ApiEnvelope, PaginationMeta } from "../types";
 
 /** Prod: full API origin from Vercel env. Dev: empty — Vite proxy serves /api. */
 const API_BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
@@ -18,9 +18,11 @@ type RequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
 };
 
-const parseEnvelope = async <T>(res: Response): Promise<ApiEnvelope<T>> => {
+const parseEnvelope = async <T, M = undefined>(
+  res: Response,
+): Promise<ApiEnvelope<T, M>> => {
   try {
-    return (await res.json()) as ApiEnvelope<T>;
+    return (await res.json()) as ApiEnvelope<T, M>;
   } catch {
     return { success: false, error: res.statusText };
   }
@@ -61,4 +63,41 @@ export const request = async <T>(
   }
 
   return payload.data;
+};
+
+export type PaginatedResponse<T> = {
+  data: T;
+  meta: PaginationMeta;
+};
+
+/**
+ * Unwraps paginated list responses `{ success, data, meta }`.
+ */
+export const requestPaginated = async <T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<PaginatedResponse<T>> => {
+  const { body, headers, ...rest } = options;
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...rest,
+    credentials: "include",
+    headers: {
+      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+      ...headers,
+    },
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+
+  const payload = await parseEnvelope<T, PaginationMeta>(res);
+
+  if (!payload.success) {
+    throw new ApiError(res.status, payload.error);
+  }
+
+  if (!("meta" in payload) || payload.meta === undefined) {
+    throw new ApiError(500, "Missing pagination meta");
+  }
+
+  return { data: payload.data, meta: payload.meta };
 };

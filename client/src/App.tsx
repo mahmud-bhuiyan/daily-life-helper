@@ -9,6 +9,7 @@ import {
 import { Card } from "./components/ui";
 import { UsersAdminPage } from "./pages/admin/users/UsersAdminPage";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
+import { ExpensesPage } from "./pages/expenses/ExpensesPage";
 import { LoginPage } from "./pages/login/LoginPage";
 
 const PlaceholderPage = ({ title, step }: { title: string; step: string }) => (
@@ -36,10 +37,7 @@ const App = () => (
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route
-            path="/expenses"
-            element={<PlaceholderPage title="Expenses" step="Step 03" />}
-          />
+          <Route path="/expenses" element={<ExpensesPage />} />
           <Route
             path="/items"
             element={<PlaceholderPage title="Items" step="Step 05" />}
