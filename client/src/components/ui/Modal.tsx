@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 type ModalProps = {
   open: boolean;
@@ -26,10 +27,10 @@ export const Modal = ({ open, onClose, title, children }: ModalProps) => {
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+  return createPortal(
+    <div className="fixed inset-0 z-100 flex items-end justify-center sm:items-center">
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/70"
         onClick={onClose}
         role="presentation"
         aria-hidden
@@ -56,6 +57,7 @@ export const Modal = ({ open, onClose, title, children }: ModalProps) => {
         </div>
         <div className="overflow-y-auto p-5 sm:p-6">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

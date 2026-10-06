@@ -23,7 +23,7 @@ export const AppShell = () => {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-(--border)/80 bg-(--surface)/90 px-4 py-3 backdrop-blur-md sm:px-6 sm:py-4">
+        <header className="sticky top-0 z-30 flex h-(--shell-header-h) shrink-0 items-center justify-between gap-3 border-b border-(--border)/80 bg-(--surface)/90 px-4 backdrop-blur-md sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
