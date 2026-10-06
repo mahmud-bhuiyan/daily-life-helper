@@ -1,12 +1,16 @@
 import { useMemo, useState } from "react";
 import { PageHeader } from "../../components/layout";
+import { CategorySelect } from "../../components/forms/CategorySelect";
 import { ExpenseForm } from "../../components/forms/ExpenseForm";
 import {
   Button,
   Card,
+  ConfirmModal,
   EmptyState,
+  ErrorBanner,
   Modal,
   Select,
+  SkeletonRows,
 } from "../../components/ui";
 import {
   useCategories,
@@ -19,6 +23,8 @@ import {
 import {
   dateInputToFromIso,
   dateInputToToIso,
+  formatMoney,
+  formatSpentAt,
 } from "../../lib/format";
 import type {
   CreateExpenseInput,
@@ -36,6 +42,7 @@ export const ExpensesPage = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Expense | undefined>();
+  const [deleting, setDeleting] = useState<Expense | null>(null);
 
   const filters: ExpenseListFilters = useMemo(
     () => ({
@@ -51,7 +58,7 @@ export const ExpensesPage = () => {
 
   const { data: categories = [] } = useCategories();
   const { data: items = [] } = useItems();
-  const { data, isPending, isError, isFetching } = useExpenses(filters);
+  const { data, isPending, isError, error, refetch } = useExpenses(filters);
   const createExpense = useCreateExpense();
   const updateExpense = useUpdateExpense();
   const deleteExpense = useDeleteExpense();
@@ -76,9 +83,15 @@ export const ExpensesPage = () => {
     setEditing(undefined);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this expense?")) return;
-    await deleteExpense.mutateAsync(id);
+  const handleDeleteRequest = (expense: Expense) => {
+    setDeleting(expense);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!deleting) return;
+    const target = deleting;
+    setDeleting(null);
+    deleteExpense.mutate(target.id);
   };
 
   const clearFilters = () => {
@@ -123,21 +136,15 @@ export const ExpensesPage = () => {
               className="min-h-11 w-full rounded-(--radius-input) border border-(--border) bg-(--bg)/80 px-4 py-2.5 text-sm text-(--text)"
             />
           </div>
-          <Select
+          <CategorySelect
             label="Category"
             value={categoryId}
-            onChange={(e) => {
-              setCategoryId(e.target.value);
+            onChange={(id) => {
+              setCategoryId(id);
               setPage(1);
             }}
-          >
-            <option value="">All</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </Select>
+            categories={categories}
+          />
           <Select
             label="Item"
             value={itemId}
@@ -158,27 +165,18 @@ export const ExpensesPage = () => {
           <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
             Clear filters
           </Button>
-          {isFetching && data && (
-            <span className="text-xs text-(--muted)">Updating…</span>
-          )}
         </div>
       </Card>
 
-      {showSkeleton && (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-24 animate-pulse rounded-(--radius-card) bg-(--surface)"
-            />
-          ))}
-        </div>
-      )}
+      {showSkeleton && <SkeletonRows count={3} />}
 
       {isError && !data && (
-        <Card>
-          <p className="text-sm text-(--danger)">Could not load expenses.</p>
-        </Card>
+        <ErrorBanner
+          message={
+            error instanceof Error ? error.message : "Could not load expenses."
+          }
+          onRetry={() => refetch()}
+        />
       )}
 
       {!showSkeleton && !isError && expenses.length === 0 && (
@@ -195,8 +193,7 @@ export const ExpensesPage = () => {
           <ExpenseTable
             expenses={expenses}
             onEdit={openEdit}
-            onDelete={handleDelete}
-            deletingId={deleteExpense.isPending ? deleteExpense.variables : undefined}
+            onDelete={handleDeleteRequest}
           />
 
           {meta && meta.total > meta.limit && (
@@ -246,6 +243,32 @@ export const ExpensesPage = () => {
           }}
         />
       </Modal>
+
+      <ConfirmModal
+        open={deleting !== null}
+        onClose={() => setDeleting(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete expense?"
+        description={
+          deleting ? (
+            <>
+              This permanently removes{" "}
+              <span className="font-medium text-(--text)">
+                {formatMoney(deleting.amountMinor, deleting.currency)}
+              </span>{" "}
+              from{" "}
+              <span className="font-medium text-(--text)">
+                {formatSpentAt(deleting.spentAt)}
+              </span>
+              . This cannot be undone.
+            </>
+          ) : (
+            ""
+          )
+        }
+        confirmLabel="Delete"
+        destructive
+      />
     </>
   );
 };

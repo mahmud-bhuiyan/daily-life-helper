@@ -162,13 +162,31 @@ Never bind loading skeletons to `isFetching` alone. `ChartShell`, tables, and su
 ### Mutations
 
 - Use `useMutation` for POST/PATCH/DELETE.
-- On success: `queryClient.invalidateQueries({ queryKey: … })` — lists update in background without full-page loading.
+- **Optimistic updates first:** patch the TanStack Query cache in `onMutate` so lists and forms update instantly; roll back in `onError` via snapshots (`lib/queryCache.ts`).
+- **Background sync:** `onSettled` → `invalidateQueries({ refetchType: 'active' })` refreshes in the background without clearing the UI.
+- Do **not** block the page or confirm dialogs on `isPending` — close modals immediately; show errors inline if the server rejects the change.
 - Prefer **optimistic updates** for expense edit/delete when trivial; otherwise invalidate related keys.
 
 ### Auth integration
 
 - `GET /auth/me` → `useAuth` backed by `useQuery(['auth', 'me'])`.
 - On `401` from any query: clear cache, redirect to `/login` (global `QueryCache` `onError` or `api.ts` interceptor).
+
+---
+
+## 3.3 Client state (Context + Query — no Redux)
+
+| Layer | Where | Purpose |
+|-------|--------|---------|
+| **React Context** | `context/AuthProvider.tsx` + `useAuth()` | Session only: user profile, login/logout, `isSuperAdmin`. Values come from `useQuery(['auth','me'])` — do **not** copy API lists into Context. |
+| **TanStack Query cache** | `QueryClientProvider` in `main.tsx`, hooks in `hooks/queries/` | Shared **server state** for categories, expenses, items, reports, admin users. Same cache across all routes — this replaces a global Redux store. |
+| **Local state** | `useState` in pages/components | Filters, pagination, modals, form fields — ephemeral UI only. |
+
+**Navigation:** `AppShell` subscribes to hot queries (`useCategories`, `useItems`) so moving between sidebar pages reuses cached data — skeletons only when there is truly no cached data yet (`isPending && !data`).
+
+**Writes:** mutations update the query cache optimistically, then reconcile with the server in the background. Users should never see a full-page reload or list skeleton after add/edit/delete.
+
+**Do not:** mirror entity lists in React Context, add Redux, or tie skeletons to `isFetching` / mutation `isPending` for whole pages.
 
 ---
 
@@ -190,15 +208,15 @@ CREATE TABLE users (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- categories: per-user (Food, Transport, Bills, ...)
+-- categories: global (user_id NULL) + per-user custom rows
 CREATE TABLE categories (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id    UUID REFERENCES users(id) ON DELETE CASCADE,  -- NULL = global
   name       TEXT NOT NULL,
   color      TEXT NOT NULL DEFAULT '#6366f1',
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (user_id, name)
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Unique: global names (partial index), per-user names (partial index) — see 002_global_categories.sql
 
 -- items: per-user normalized product names (Onion, Rice, Milk)
 CREATE TABLE items (
@@ -239,7 +257,7 @@ CREATE INDEX idx_items_user_id ON items (user_id);
 **Seed data:**
 
 1. Bootstrap `super_admin` user from env (see §13).
-2. On first login (or user creation), seed default categories for that user: Food, Transport, Utilities, Shopping, Health, Other.
+2. **Global categories** (shared catalog, `user_id` NULL) seeded on migrate — Food, Transport, Utilities, etc. Users add **custom** categories via `POST /categories` (scoped to their `user_id`).
 
 ---
 
@@ -271,8 +289,10 @@ Routes below marked **auth** require a valid session. **admin** requires `super_
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/categories` | auth | List current user's categories |
-| POST | `/categories` | auth | Create `{ name, color? }` |
+| GET | `/categories` | auth | List global + current user's categories |
+| POST | `/categories` | auth | Create user-specific `{ name, color? }` — **name max 20 characters** |
+| PATCH | `/categories/:id` | auth | Update own category, or global if `super_admin` — **name max 20 characters** |
+| DELETE | `/categories/:id` | auth | Delete when no expenses reference it (global: `super_admin` only) |
 
 ### Items
 
@@ -414,6 +434,7 @@ client/
 │   ├── lib/
 │   │   ├── api.ts             # fetch wrapper, credentials: include
 │   │   ├── queryClient.ts     # QueryClient + global defaults
+│   │   ├── queryCache.ts      # optimistic mutation snapshots / temp ids
 │   │   ├── queryKeys.ts       # centralized query key factory
 │   │   ├── format.ts          # money, dates
 │   │   └── constants.ts
@@ -600,10 +621,10 @@ Short, imperative: `add expense list page`, `fix week grouping timezone`.
 
 ### Step 06 — Polish & responsive design
 
-- [ ] Loading / error / empty states on all pages
-- [ ] **Modern, fully responsive UI pass** — mobile drawer sidebar, fluid grids, touch-friendly controls, readable charts/tables on small screens
-- [ ] Responsive sidebar (collapse to drawer on mobile)
-- [ ] README with local setup + Neon env instructions
+- [x] Loading / error / empty states on all pages
+- [x] **Modern, fully responsive UI pass** — mobile drawer sidebar, fluid grids, touch-friendly controls, readable charts/tables on small screens
+- [x] Responsive sidebar (collapse to drawer on mobile)
+- [x] README with local setup + Neon env instructions
 
 ### Later modules (placeholders in sidebar)
 
@@ -670,4 +691,4 @@ Project skill lives at `.cursor/skills/dlh-project/SKILL.md` — agents must rea
 
 ---
 
-*Last updated: 2026-10-03*
+*Last updated: 2026-10-06*

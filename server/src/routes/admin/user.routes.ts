@@ -24,7 +24,7 @@ const adminOnly = [requireAuth, requireSuperAdmin] as const;
 adminUserRoutes.get('/admin/users', ...adminOnly, listUsers);
 
 /**
- * POST /api/v1/admin/users — create user + seed default categories.
+ * POST /api/v1/admin/users — create user (uses shared global categories).
  */
 adminUserRoutes.post(
   '/admin/users',

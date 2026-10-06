@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { PageHeader } from "../../../components/layout";
-import { Button, Card, EmptyState } from "../../../components/ui";
+import {
+  Button,
+  Card,
+  EmptyState,
+  ErrorBanner,
+  SkeletonRows,
+} from "../../../components/ui";
 import {
   useAdminUsers,
   useAuth,
@@ -11,21 +17,10 @@ import {
 import { UserFormModal } from "./components/UserFormModal";
 import { UserTable } from "./components/UserTable";
 
-const UsersSkeleton = () => (
-  <div className="space-y-3 md:hidden">
-    {[1, 2, 3].map((i) => (
-      <div
-        key={i}
-        className="h-36 animate-pulse rounded-(--radius-card) bg-(--surface)"
-      />
-    ))}
-  </div>
-);
-
 export const UsersAdminPage = () => {
   const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
-  const { data, isPending, isError } = useAdminUsers();
+  const { data, isPending, isError, error, refetch } = useAdminUsers();
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const deactivateUser = useDeactivateUser();
@@ -42,15 +37,25 @@ export const UsersAdminPage = () => {
 
       {showSkeleton && (
         <>
-          <UsersSkeleton />
-          <div className="mt-4 hidden h-64 animate-pulse rounded-(--radius-card) bg-(--surface) md:block" />
+          <SkeletonRows
+            count={3}
+            rowClassName="h-36 rounded-(--radius-card) bg-(--surface) md:hidden"
+          />
+          <div className="hidden md:block">
+            <SkeletonRows
+              count={1}
+              rowClassName="h-64 rounded-(--radius-card) bg-(--surface)"
+            />
+          </div>
         </>
       )}
 
       {isError && !data && (
-        <EmptyState
-          title="Could not load users"
-          description="Check your connection and try again."
+        <ErrorBanner
+          message={
+            error instanceof Error ? error.message : "Could not load users."
+          }
+          onRetry={() => refetch()}
         />
       )}
 
@@ -69,11 +74,8 @@ export const UsersAdminPage = () => {
           currentUserId={user?.id}
           onDeactivate={(id) => deactivateUser.mutate(id)}
           onResetPassword={async (id, password) => {
-            await updateUser.mutateAsync({ id, password });
+            updateUser.mutate({ id, password });
           }}
-          deactivatingId={
-            deactivateUser.isPending ? deactivateUser.variables : undefined
-          }
         />
       )}
 

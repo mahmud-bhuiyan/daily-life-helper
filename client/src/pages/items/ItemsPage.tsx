@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PageHeader } from "../../components/layout";
-import { Card, EmptyState, Input } from "../../components/ui";
+import { Card, EmptyState, ErrorBanner, Input, SkeletonRows } from "../../components/ui";
 import { useItems } from "../../hooks";
 import { defaultPriceHistoryRange } from "../../lib/reportRange";
 import type { Item } from "../../types";
@@ -45,25 +45,21 @@ export const ItemsPage = () => {
           />
 
           {isError && !items.length ? (
-            <div className="mt-4 text-sm text-(--text)">
-              {error instanceof Error ? error.message : "Failed to load items"}
-              <button
-                type="button"
-                className="ml-2 text-(--accent) underline"
-                onClick={() => refetch()}
-              >
-                Retry
-              </button>
+            <div className="mt-4">
+              <ErrorBanner
+                message={
+                  error instanceof Error ? error.message : "Failed to load items"
+                }
+                onRetry={() => refetch()}
+              />
             </div>
           ) : listLoading ? (
-            <ul className="mt-4 space-y-2" aria-hidden>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <li
-                  key={i}
-                  className="h-10 animate-pulse rounded-(--radius-input) bg-(--surface-hover)"
-                />
-              ))}
-            </ul>
+            <div className="mt-4">
+              <SkeletonRows
+                count={5}
+                rowClassName="h-11 rounded-(--radius-input) bg-(--surface-hover)"
+              />
+            </div>
           ) : items.length === 0 ? (
             <div className="mt-4">
               <EmptyState
@@ -80,7 +76,7 @@ export const ItemsPage = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedId(item.id)}
-                      className={`flex w-full items-center justify-between rounded-(--radius-input) px-3 py-2.5 text-left text-sm transition-colors ${
+                      className={`flex min-h-11 w-full items-center justify-between rounded-(--radius-input) px-3 py-2.5 text-left text-sm transition-colors ${
                         active
                           ? "bg-(--accent)/15 text-(--text)"
                           : "text-(--muted) hover:bg-(--surface-hover) hover:text-(--text)"

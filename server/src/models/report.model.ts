@@ -86,7 +86,8 @@ export const getSpendByCategoryForUser = async (
             c.color,
             COALESCE(SUM(e.amount_minor), 0)::bigint AS total_minor
      FROM expenses e
-     LEFT JOIN categories c ON c.id = e.category_id AND c.user_id = e.user_id
+     LEFT JOIN categories c ON c.id = e.category_id
+       AND (c.user_id IS NULL OR c.user_id = e.user_id)
      WHERE e.user_id = $1
        AND e.spent_at >= $2::timestamptz
        AND e.spent_at <= $3::timestamptz

@@ -7,6 +7,7 @@ export type {
 export type {
   Category,
   CreateCategoryInput,
+  UpdateCategoryInput,
   CreateExpenseInput,
   CreateItemInput,
   Expense,

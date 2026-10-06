@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { ChartShell, ItemPriceChart } from "../../../components/charts";
-import { Card, EmptyState, Input } from "../../../components/ui";
+import { Card, EmptyState, ErrorBanner, Input } from "../../../components/ui";
 import { useItemPriceHistory } from "../../../hooks";
 import {
   dateInputToFromIso,
@@ -87,16 +87,14 @@ export const ItemPricePanel = ({
       </Card>
 
       {isError && !data ? (
-        <div className="rounded-(--radius-card) border border-(--danger)/40 bg-(--danger)/10 px-4 py-3 text-sm text-(--text)">
-          {error instanceof Error ? error.message : "Failed to load price history"}
-          <button
-            type="button"
-            className="ml-3 text-(--accent) underline"
-            onClick={() => refetch()}
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorBanner
+          message={
+            error instanceof Error
+              ? error.message
+              : "Failed to load price history"
+          }
+          onRetry={() => refetch()}
+        />
       ) : (
         <ChartShell
           title="Unit price over time"

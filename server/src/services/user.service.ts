@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import { seedDefaultCategories } from '../db/seed.js';
 import {
   createUser,
   findUserByEmail,
@@ -26,7 +25,6 @@ export const createNewUser = async (input: CreateUserInput): Promise<UserAdmin> 
     role: input.role,
   });
 
-  await seedDefaultCategories(user.id);
   return user;
 };
 

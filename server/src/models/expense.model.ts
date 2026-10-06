@@ -71,7 +71,8 @@ const expenseSelect = `
 
 const expenseJoins = `
   FROM expenses e
-  LEFT JOIN categories c ON c.id = e.category_id AND c.user_id = e.user_id
+  LEFT JOIN categories c ON c.id = e.category_id
+    AND (c.user_id IS NULL OR c.user_id = e.user_id)
   LEFT JOIN items i ON i.id = e.item_id AND i.user_id = e.user_id
 `;
 

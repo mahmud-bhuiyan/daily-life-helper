@@ -4,7 +4,12 @@ export {
   useDeactivateUser,
   useUpdateUser,
 } from "./useAdminUsers";
-export { useCategories, useCreateCategory } from "./useCategories";
+export {
+  useCategories,
+  useCreateCategory,
+  useDeleteCategory,
+  useUpdateCategory,
+} from "./useCategories";
 export {
   useCreateExpense,
   useDeleteExpense,

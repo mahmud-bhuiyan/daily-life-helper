@@ -10,6 +10,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "migrate": "tsx src/db/migrate.ts",
+    "test:api": "tsx scripts/test-api.mts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
