@@ -1,6 +1,15 @@
 const BDT = "BDT";
 
 /** Format integer minor units (paisa) as currency display. */
+/** Per-unit price in major currency (not minor units). */
+export const formatUnitPrice = (unitPrice: number, currency = BDT): string => {
+  const symbol = currency === BDT ? "৳" : `${currency} `;
+  return `${symbol}${unitPrice.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
 export const formatMoney = (
   amountMinor: number,
   currency = BDT,

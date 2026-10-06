@@ -252,7 +252,7 @@ paths:
   /items/{id}/price-history:
     get:
       tags: [Items]
-      summary: Item price history (planned)
+      summary: Item price history
       operationId: getItemPriceHistory
       security:
         - cookieAuth: []

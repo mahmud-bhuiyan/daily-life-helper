@@ -15,6 +15,11 @@ export type {
   UpdateExpenseInput,
 } from "./expense";
 export type {
+  ItemPriceHistory,
+  ItemPriceHistoryParams,
+  PriceHistoryPoint,
+} from "./item";
+export type {
   CategoryReportRow,
   ReportBucket,
   ReportPeriod,

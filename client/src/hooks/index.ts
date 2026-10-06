@@ -10,6 +10,7 @@ export {
   useDeleteExpense,
   useExpenses,
   useHealth,
+  useItemPriceHistory,
   useItems,
   useReportSummary,
   useUpdateExpense,
