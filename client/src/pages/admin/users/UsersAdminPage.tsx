@@ -49,18 +49,18 @@ export const UsersAdminPage = () => {
       />
 
       {showSkeleton && (
-        <div className="@container">
+        <>
           <SkeletonRows
             count={3}
-            rowClassName="h-40 rounded-(--radius-card) bg-(--surface) @3xl:hidden"
+            rowClassName="h-40 rounded-(--radius-card) bg-(--surface) xl:hidden"
           />
-          <div className="hidden @3xl:block">
+          <div className="hidden xl:block">
             <SkeletonRows
               count={1}
               rowClassName="h-64 rounded-(--radius-card) bg-(--surface)"
             />
           </div>
-        </div>
+        </>
       )}
 
       {isError && !data && (

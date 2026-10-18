@@ -40,11 +40,9 @@ export type DataTableProps<T> = {
   variant?: DataTableVariant;
   className?: string;
   rowClassName?: string | ((row: T) => string);
-  /** Card-style rows until the table container is wide enough (`@3xl` / 48rem). */
+  /** Card-style rows below `xl`; wide layouts use a full-width table (no sideways scroll). */
   renderMobileRow?: (row: T, index: number) => ReactNode;
   mobileListClassName?: string;
-  /** Optional minimum table width (enables horizontal scroll inside the table shell). */
-  tableMinWidth?: string;
 };
 
 export const DataTable = <T,>({
@@ -56,15 +54,17 @@ export const DataTable = <T,>({
   rowClassName,
   renderMobileRow,
   mobileListClassName = "",
-  tableMinWidth,
 }: DataTableProps<T>) => {
   const hasMobileLayout = Boolean(renderMobileRow);
+  const scrollClass = hasMobileLayout
+    ? "min-w-0 overflow-hidden"
+    : "min-w-0 overflow-x-auto overflow-y-hidden";
 
   return (
-    <div className="@container min-w-0">
+    <div className="min-w-0">
       {hasMobileLayout && (
         <div
-          className={`flex flex-col gap-3 @3xl:hidden ${mobileListClassName}`}
+          className={`flex flex-col gap-3 xl:hidden ${mobileListClassName}`}
         >
           {data.map((row, index) => (
             <div key={getRowKey(row)}>{renderMobileRow!(row, index)}</div>
@@ -74,14 +74,11 @@ export const DataTable = <T,>({
 
       <div
         className={`rounded-(--radius-card) ${variantShellClass[variant]} ${
-          hasMobileLayout ? "hidden @3xl:block" : ""
+          hasMobileLayout ? "hidden xl:block" : ""
         } ${className}`}
       >
-        <div className="table-scroll min-w-0 overflow-x-auto overscroll-x-contain">
-          <table
-            className="w-full table-auto text-sm"
-            style={tableMinWidth ? { minWidth: tableMinWidth } : undefined}
-          >
+        <div className={scrollClass}>
+          <table className="w-full table-auto text-sm">
             <colgroup>
               {columns.map((column) => (
                 <col
