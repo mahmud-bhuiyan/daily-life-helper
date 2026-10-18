@@ -103,6 +103,7 @@ export const updateUserPassword = async (userId: string, passwordHash: string): 
 export const updateUser = async (
   userId: string,
   fields: {
+    email?: string;
     displayName?: string;
     role?: UserRole;
     isActive?: boolean;
@@ -113,6 +114,10 @@ export const updateUser = async (
   const values: unknown[] = [userId];
   let idx = 2;
 
+  if (fields.email !== undefined) {
+    sets.push(`email = $${idx++}`);
+    values.push(fields.email.toLowerCase());
+  }
   if (fields.displayName !== undefined) {
     sets.push(`display_name = $${idx++}`);
     values.push(fields.displayName);

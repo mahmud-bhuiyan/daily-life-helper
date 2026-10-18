@@ -228,6 +228,7 @@ export const ExpensesPage = () => {
         open={modalOpen}
         onClose={closeModal}
         title={editing ? "Edit expense" : "Add expense"}
+        size="lg"
       >
         <ExpenseForm
           key={editing?.id ?? "new"}

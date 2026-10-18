@@ -37,8 +37,19 @@ export const updateExistingUser = async (
     throw new ApiError(400, 'Cannot deactivate your own account');
   }
 
+  if (input.role !== undefined && targetId === actorId) {
+    throw new ApiError(400, 'Cannot change your own role');
+  }
+
   const fields: Parameters<typeof updateUser>[1] = {};
 
+  if (input.email !== undefined) {
+    const existing = await findUserByEmail(input.email);
+    if (existing && existing.id !== targetId) {
+      throw new ApiError(409, 'Email already in use');
+    }
+    fields.email = input.email;
+  }
   if (input.displayName !== undefined) fields.displayName = input.displayName;
   if (input.role !== undefined) fields.role = input.role;
   if (input.isActive !== undefined) fields.isActive = input.isActive;

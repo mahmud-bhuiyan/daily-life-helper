@@ -30,8 +30,9 @@ export const ItemPriceChart = ({
   }));
 
   return (
-    <ResponsiveContainer width="100%" height={288}>
-      <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+    <div className="h-56 w-full min-w-0 sm:h-72">
+      <ResponsiveContainer width="100%" height="100%">
+      <AreaChart data={data} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#22c55e" stopOpacity={0.35} />
@@ -51,7 +52,7 @@ export const ItemPriceChart = ({
           tick={{ fill: "#94a3b8", fontSize: 11 }}
           tickLine={false}
           axisLine={false}
-          width={56}
+          width={48}
           tickFormatter={(v) => formatUnitPrice(Number(v), currency).replace(/\.00$/, "")}
         />
         <Tooltip
@@ -77,5 +78,6 @@ export const ItemPriceChart = ({
         />
       </AreaChart>
     </ResponsiveContainer>
+    </div>
   );
 };

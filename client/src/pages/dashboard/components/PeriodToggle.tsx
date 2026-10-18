@@ -14,7 +14,7 @@ type PeriodToggleProps = {
 
 export const PeriodToggle = ({ value, onChange }: PeriodToggleProps) => (
   <div
-    className="inline-flex max-w-full flex-wrap gap-1 rounded-(--radius-input) border border-(--border) bg-(--surface) p-1"
+    className="grid w-full grid-cols-2 gap-1 rounded-(--radius-input) border border-(--border) bg-(--surface) p-1 sm:inline-flex sm:w-auto sm:max-w-full sm:flex-wrap"
     role="group"
     aria-label="Report period"
   >
@@ -25,7 +25,7 @@ export const PeriodToggle = ({ value, onChange }: PeriodToggleProps) => (
           key={p.value}
           type="button"
           onClick={() => onChange(p.value)}
-          className={`min-h-11 rounded-md px-4 text-sm font-medium transition-colors ${
+          className={`min-h-11 rounded-md px-3 text-sm font-medium transition-colors sm:px-4 ${
             active
               ? "bg-(--accent) text-(--bg)"
               : "text-(--muted) hover:bg-(--surface-hover) hover:text-(--text)"

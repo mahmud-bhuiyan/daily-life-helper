@@ -44,7 +44,7 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-72 flex-col border-r border-(--border) bg-(--surface) shadow-2xl transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:z-auto lg:w-64 lg:shrink-0 lg:translate-x-0 lg:self-start lg:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-[min(18rem,85vw)] flex-col border-r border-(--border) bg-(--surface) pt-[env(safe-area-inset-top,0px)] shadow-2xl transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:z-auto lg:w-64 lg:shrink-0 lg:translate-x-0 lg:self-start lg:pt-0 lg:shadow-none ${
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
         aria-label="Main navigation"
@@ -82,7 +82,7 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
           ))}
         </nav>
 
-        <div className="border-t border-(--border) p-4">
+        <div className="safe-area-b border-t border-(--border) p-4">
           <p className="text-xs text-(--muted)">Phase 1 · Expense tracker</p>
         </div>
       </aside>

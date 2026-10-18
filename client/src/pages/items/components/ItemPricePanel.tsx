@@ -70,18 +70,20 @@ export const ItemPricePanel = ({
             </p>
           )}
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="grid w-full min-w-0 gap-3 sm:flex sm:w-auto sm:flex-wrap">
           <Input
             type="date"
             label="From"
             value={fromDate}
             onChange={(e) => onFromDateChange(e.target.value)}
+            className="min-w-0 sm:w-40"
           />
           <Input
             type="date"
             label="To"
             value={toDate}
             onChange={(e) => onToDateChange(e.target.value)}
+            className="min-w-0 sm:w-40"
           />
         </div>
       </Card>

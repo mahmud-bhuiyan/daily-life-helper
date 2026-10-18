@@ -13,6 +13,8 @@ type ConfirmModalProps = {
   cancelLabel?: string;
   loading?: boolean;
   destructive?: boolean;
+  /** Defaults to trash when `destructive` is true. */
+  icon?: ReactNode;
 };
 
 export const ConfirmModal = ({
@@ -25,20 +27,26 @@ export const ConfirmModal = ({
   cancelLabel = "Cancel",
   loading = false,
   destructive = false,
+  icon,
 }: ConfirmModalProps) => (
   <Modal open={open} onClose={loading ? () => {} : onClose} title={title}>
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-start gap-4 sm:flex-row">
       {destructive && (
         <div
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-(--danger)/15 text-(--danger) ring-1 ring-(--danger)/25"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-(--radius-card) bg-(--danger)/10 text-(--danger) ring-1 ring-(--danger)/25 shadow-elevated"
           aria-hidden
         >
-          <TrashIcon className="h-5 w-5" />
+          {icon ?? <TrashIcon className="h-6 w-6" />}
         </div>
       )}
-      <p className="text-sm leading-relaxed text-(--muted)">{description}</p>
+      <div className="min-w-0 flex-1 pt-0.5">
+        <p className="text-sm leading-relaxed text-(--text)/90">{description}</p>
+      </div>
     </div>
-    <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+
+    <div
+      className="-mx-5 -mb-5 mt-6 flex flex-col-reverse gap-2.5 border-t border-(--border)/80 bg-(--bg)/50 px-5 py-4 sm:-mx-6 sm:-mb-6 sm:flex-row sm:justify-end sm:px-6"
+    >
       <Button
         type="button"
         variant="outline"

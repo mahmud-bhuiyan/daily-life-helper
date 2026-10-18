@@ -71,14 +71,14 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="login-bg flex items-center justify-center p-4 sm:p-6">
+    <div className="login-bg safe-area-x safe-area-b flex min-h-dvh items-center justify-center py-6 pt-[max(1.5rem,env(safe-area-inset-top,0px))] sm:p-6">
       <div className="animate-fade-in w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-(--radius-card) bg-(--accent)/15 text-2xl ring-1 ring-(--accent)/30">
             ✦
           </div>
           <p className="text-overline text-(--accent)">Daily Life Helper</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-(--text)">
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-(--text) sm:text-3xl">
             Welcome back
           </h1>
           <p className="mt-2 text-sm text-(--muted)">

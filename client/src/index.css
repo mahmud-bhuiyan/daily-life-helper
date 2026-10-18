@@ -69,6 +69,27 @@ body {
   display: flex;
   min-height: 100dvh;
   flex-direction: column;
+  overflow-x: clip;
+}
+
+@utility safe-area-x {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+@utility safe-area-b {
+  padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
+}
+
+/* Data tables: room for scrollbar + edge hint when content overflows */
+.table-scroll {
+  padding-bottom: 0.25rem;
+  background:
+    linear-gradient(to right, var(--surface) 0, transparent 1.25rem) 0 0 / 1.25rem
+      100% no-repeat local,
+    linear-gradient(to left, var(--surface) 0, transparent 1.25rem) 100% 0 / 1.25rem
+      100% no-repeat local;
+  background-attachment: local, local;
 }
 
 /* Ambient page backgrounds */

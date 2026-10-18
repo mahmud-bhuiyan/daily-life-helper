@@ -1,14 +1,28 @@
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
+type ModalSize = "md" | "lg";
+
+const sizeClass: Record<ModalSize, string> = {
+  md: "sm:max-w-md",
+  lg: "sm:max-w-lg",
+};
+
 type ModalProps = {
   open: boolean;
   onClose: () => void;
   title: string;
   children: ReactNode;
+  size?: ModalSize;
 };
 
-export const Modal = ({ open, onClose, title, children }: ModalProps) => {
+export const Modal = ({
+  open,
+  onClose,
+  title,
+  children,
+  size = "md",
+}: ModalProps) => {
   useEffect(() => {
     if (!open) return;
 
@@ -30,14 +44,14 @@ export const Modal = ({ open, onClose, title, children }: ModalProps) => {
   return createPortal(
     <div className="fixed inset-0 z-100 flex items-end justify-center sm:items-center">
       <div
-        className="absolute inset-0 bg-black/70"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
         role="presentation"
         aria-hidden
       />
 
       <div
-        className="animate-fade-in relative z-10 flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-t-(--radius-card) border border-(--border) bg-(--surface) shadow-2xl sm:max-w-md sm:rounded-(--radius-card)"
+        className={`animate-fade-in relative z-10 flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-t-(--radius-card) border border-(--border) bg-(--surface) pb-[env(safe-area-inset-bottom,0px)] shadow-2xl sm:rounded-(--radius-card) ${sizeClass[size]}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"

@@ -68,7 +68,7 @@ export const ItemsPage = () => {
               />
             </div>
           ) : (
-            <ul className="mt-4 max-h-96 space-y-1 overflow-y-auto">
+            <ul className="mt-4 max-h-52 space-y-1 overflow-y-auto sm:max-h-72 lg:max-h-96">
               {items.map((item: Item) => {
                 const active = item.id === activeId;
                 return (
