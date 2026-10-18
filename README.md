@@ -70,6 +70,7 @@ Deploy `client/` and `server/` as **two Vercel projects** from the same repo. Se
 | `DATABASE_URL` | Neon **pooled** connection string (`?sslmode=require`) |
 | `JWT_SECRET` | Min 32 random characters |
 | `CLIENT_URL` | Your client Vercel URL(s), comma-separated for previews |
+| `APP_ENV` | `production` (enables production DB + cookie defaults) |
 
 3. Run migrations once against Neon (local or CI): `npm run migrate`
 4. Deploy — Vercel auto-detects Express from `src/server.ts` (zero-config)
