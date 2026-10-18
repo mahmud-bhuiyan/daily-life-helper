@@ -25,6 +25,7 @@ export type CreateUserInput = {
 };
 
 export type UpdateUserInput = {
+  email?: string;
   displayName?: string;
   role?: UserRole;
   isActive?: boolean;

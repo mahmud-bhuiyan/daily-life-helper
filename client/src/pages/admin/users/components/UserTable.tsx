@@ -1,156 +1,253 @@
-import { Badge, Button, Card } from "../../../../components/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  DataTable,
+  type DataTableColumn,
+  KeyIcon,
+  PencilIcon,
+  Tooltip,
+  UserMinusIcon,
+} from "../../../../components/ui";
 import type { UserAdmin } from "../../../../types";
 
 type UserTableProps = {
   users: UserAdmin[];
   currentUserId?: string;
+  onEdit: (user: UserAdmin) => void;
   onDeactivate: (id: string) => void;
-  onResetPassword: (id: string, password: string) => Promise<void>;
+  onResetPassword: (user: UserAdmin) => void;
   deactivatingId?: string;
 };
 
-const formatRole = (role: UserAdmin["role"]) => role.replace("_", " ");
+const formatRole = (role: UserAdmin["role"]) =>
+  role?.replaceAll("_", " ") ?? "—";
+
+const UserAvatar = ({ name }: { name: string }) => {
+  const initial = name.trim().charAt(0).toUpperCase() || "?";
+
+  return (
+    <span
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-(--accent)/15 text-sm font-semibold text-(--accent) ring-1 ring-(--accent)/25"
+      aria-hidden
+    >
+      {initial}
+    </span>
+  );
+};
+
+type UserRowActionsProps = {
+  user: UserAdmin;
+  isSelf: boolean;
+  deactivating: boolean;
+  onEdit: () => void;
+  onResetPassword: () => void;
+  onDeactivate: () => void;
+  className?: string;
+};
+
+const UserRowActions = ({
+  user,
+  isSelf,
+  deactivating,
+  onEdit,
+  onResetPassword,
+  onDeactivate,
+  className = "",
+}: UserRowActionsProps) => (
+  <div className={`flex shrink-0 gap-1 ${className}`}>
+    <Tooltip label="Edit user">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="px-2.5"
+        onClick={onEdit}
+        disabled={!user.isActive}
+        aria-label={`Edit ${user.displayName}`}
+      >
+        <PencilIcon />
+      </Button>
+    </Tooltip>
+    <Tooltip label="Reset password">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="px-2.5"
+        onClick={onResetPassword}
+        disabled={!user.isActive}
+        aria-label={`Reset password for ${user.displayName}`}
+      >
+        <KeyIcon />
+      </Button>
+    </Tooltip>
+    <Tooltip
+      label={
+        isSelf
+          ? "Can't deactivate your account"
+          : deactivating
+            ? "Deactivating…"
+            : "Deactivate user"
+      }
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="px-2.5 text-(--danger) hover:border-(--danger)/30 hover:bg-(--danger)/10"
+        onClick={onDeactivate}
+        disabled={!user.isActive || isSelf || deactivating}
+        aria-label={`Deactivate ${user.displayName}`}
+      >
+        <UserMinusIcon />
+      </Button>
+    </Tooltip>
+  </div>
+);
+
+const userColumns = (
+  currentUserId: string | undefined,
+  deactivatingId: string | undefined,
+  onEdit: (user: UserAdmin) => void,
+  onResetPassword: (user: UserAdmin) => void,
+  onDeactivate: (id: string) => void,
+): DataTableColumn<UserAdmin>[] => [
+  {
+    id: "name",
+    header: "Name",
+    width: "24%",
+    render: (user) => {
+      const isSelf = user.id === currentUserId;
+      return (
+        <>
+          <span className="font-medium text-(--text)">{user.displayName}</span>
+          {isSelf && (
+            <span className="ml-2 text-xs font-normal text-(--accent)">
+              (you)
+            </span>
+          )}
+        </>
+      );
+    },
+  },
+  {
+    id: "email",
+    header: "Email",
+    width: "30%",
+    cellClassName: "truncate text-(--muted)",
+    render: (user) => user.email,
+  },
+  {
+    id: "role",
+    header: "Role",
+    width: "14%",
+    cellClassName: "capitalize text-(--text)",
+    render: (user) => formatRole(user.role),
+  },
+  {
+    id: "status",
+    header: "Status",
+    width: "14%",
+    headerAlign: "center",
+    cellAlign: "center",
+    render: (user) => (
+      <Badge variant={user.isActive ? "success" : "muted"}>
+        {user.isActive ? "Active" : "Inactive"}
+      </Badge>
+    ),
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    width: "8.5rem",
+    headerAlign: "center",
+    cellAlign: "center",
+    cellClassName: "whitespace-nowrap",
+    render: (user) => {
+      const isSelf = user.id === currentUserId;
+      return (
+        <UserRowActions
+          user={user}
+          isSelf={isSelf}
+          deactivating={deactivatingId === user.id}
+          onEdit={() => onEdit(user)}
+          onResetPassword={() => onResetPassword(user)}
+          onDeactivate={() => onDeactivate(user.id)}
+          className="inline-flex justify-center"
+        />
+      );
+    },
+  },
+];
 
 export const UserTable = ({
   users,
   currentUserId,
+  onEdit,
   onDeactivate,
   onResetPassword,
   deactivatingId,
-}: UserTableProps) => {
-  const handleReset = async (id: string) => {
-    const password = window.prompt("Enter new password (min 8 characters):");
-    if (!password || password.length < 8) return;
-    await onResetPassword(id, password);
-  };
+}: UserTableProps) => (
+  <DataTable
+    data={users}
+    getRowKey={(user) => user.id}
+    columns={userColumns(
+      currentUserId,
+      deactivatingId,
+      onEdit,
+      onResetPassword,
+      onDeactivate,
+    )}
+    renderMobileRow={(user) => {
+      const isSelf = user.id === currentUserId;
 
-  return (
-    <>
-      {/* Mobile: card list */}
-      <div className="flex flex-col gap-3 md:hidden">
-        {users.map((user) => {
-          const isSelf = user.id === currentUserId;
-
-          return (
-            <Card key={user.id} padding="default">
-              <div className="flex items-start justify-between gap-3">
+      return (
+        <Card padding="none" className="shadow-elevated">
+          <div className="flex gap-3 p-5 sm:p-6">
+            <UserAvatar name={user.displayName} />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-(--text)">
+                  <p className="truncate font-semibold text-(--text)">
                     {user.displayName}
+                    {isSelf && (
+                      <span className="ml-1.5 text-xs font-normal text-(--accent)">
+                        (you)
+                      </span>
+                    )}
                   </p>
-                  <p className="truncate text-sm text-(--muted)">
+                  <p className="mt-0.5 truncate text-sm text-(--muted)">
                     {user.email}
                   </p>
                 </div>
-                <Badge variant={user.isActive ? "success" : "muted"}>
-                  {user.isActive ? "Active" : "Inactive"}
-                </Badge>
+                <span className="shrink-0">
+                  <Badge variant={user.isActive ? "success" : "muted"}>
+                    {user.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </span>
               </div>
+              <p className="mt-3 text-xs font-medium uppercase tracking-wider text-(--muted)">
+                Role
+              </p>
+              <p className="mt-0.5 capitalize text-sm text-(--text)">
+                {formatRole(user.role)}
+              </p>
+            </div>
+          </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <Badge variant="muted">{formatRole(user.role)}</Badge>
-                {isSelf && <Badge variant="success">You</Badge>}
-              </div>
-
-              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => handleReset(user.id)}
-                  disabled={!user.isActive}
-                >
-                  Reset password
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => onDeactivate(user.id)}
-                  disabled={
-                    !user.isActive || isSelf || deactivatingId === user.id
-                  }
-                >
-                  Deactivate
-                </Button>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Desktop: table */}
-      <div className="hidden overflow-hidden rounded-(--radius-card) border border-(--border) bg-(--surface) shadow-elevated md:block">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-(--border) bg-(--bg)/40 text-(--muted)">
-              <tr>
-                <th className="px-5 py-3.5 font-medium">Name</th>
-                <th className="px-5 py-3.5 font-medium">Email</th>
-                <th className="px-5 py-3.5 font-medium">Role</th>
-                <th className="px-5 py-3.5 font-medium">Status</th>
-                <th className="px-5 py-3.5 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => {
-                const isSelf = user.id === currentUserId;
-
-                return (
-                  <tr
-                    key={user.id}
-                    className="border-b border-(--border)/70 transition-colors last:border-0 hover:bg-(--surface-hover)/40"
-                  >
-                    <td className="px-5 py-4 font-medium text-(--text)">
-                      {user.displayName}
-                      {isSelf && (
-                        <span className="ml-2 text-xs font-normal text-(--accent)">
-                          (you)
-                        </span>
-                      )}
-                    </td>
-                    <td className="max-w-48 truncate px-5 py-4 text-(--muted)">
-                      {user.email}
-                    </td>
-                    <td className="px-5 py-4 capitalize text-(--text)">
-                      {formatRole(user.role)}
-                    </td>
-                    <td className="px-5 py-4">
-                      <Badge variant={user.isActive ? "success" : "muted"}>
-                        {user.isActive ? "Active" : "Inactive"}
-                      </Badge>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleReset(user.id)}
-                          disabled={!user.isActive}
-                        >
-                          Reset password
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => onDeactivate(user.id)}
-                          disabled={
-                            !user.isActive ||
-                            isSelf ||
-                            deactivatingId === user.id
-                          }
-                        >
-                          Deactivate
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
-  );
-};
+          <div className="flex items-center justify-end gap-1 border-t border-(--border)/80 bg-(--bg)/30 px-3 py-2.5">
+            <UserRowActions
+              user={user}
+              isSelf={isSelf}
+              deactivating={deactivatingId === user.id}
+              onEdit={() => onEdit(user)}
+              onResetPassword={() => onResetPassword(user)}
+              onDeactivate={() => onDeactivate(user.id)}
+            />
+          </div>
+        </Card>
+      );
+    }}
+  />
+);

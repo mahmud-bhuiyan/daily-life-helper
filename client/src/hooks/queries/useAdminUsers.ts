@@ -4,6 +4,11 @@ import { restoreQuerySnapshots, snapshotQueryData } from "../../lib/queryCache";
 import { queryKeys } from "../../lib/queryKeys";
 import type { CreateUserInput, UpdateUserInput, UserAdmin } from "../../types";
 
+const definedFields = <T extends Record<string, unknown>>(fields: T) =>
+  Object.fromEntries(
+    Object.entries(fields).filter(([, value]) => value !== undefined),
+  ) as Partial<T>;
+
 export const useAdminUsers = () =>
   useQuery({
     queryKey: queryKeys.admin.users,
@@ -42,16 +47,17 @@ export const useUpdateUser = () => {
     mutationFn: ({ id, ...body }: UpdateUserInput & { id: string }) =>
       request<UserAdmin>(`/api/v1/admin/users/${id}`, {
         method: "PATCH",
-        body,
+        body: definedFields(body),
       }),
     onMutate: async ({ id, ...body }) => {
+      const patch = definedFields(body);
       await queryClient.cancelQueries({ queryKey: queryKeys.admin.users });
       const snapshots = snapshotQueryData<UserAdmin[]>(
         queryClient,
         queryKeys.admin.users,
       );
       queryClient.setQueryData<UserAdmin[]>(queryKeys.admin.users, (old = []) =>
-        old.map((user) => (user.id === id ? { ...user, ...body } : user)),
+        old.map((user) => (user.id === id ? { ...user, ...patch } : user)),
       );
       return { snapshots };
     },

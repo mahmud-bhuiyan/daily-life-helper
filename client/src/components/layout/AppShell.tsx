@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useAuth, useCategories, useItems } from "../../hooks";
 import { Button } from "../ui/Button";
@@ -25,13 +25,26 @@ export const AppShell = () => {
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  useEffect(() => {
+    if (!sidebarOpen) return;
+
+    const mq = window.matchMedia("(min-width: 1024px)");
+    if (mq.matches) return;
+
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen]);
+
   return (
     <div className="app-shell-bg flex h-dvh min-h-0 w-full shrink-0 overflow-hidden">
       <ShellQuerySubscriptions />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <header className="z-30 flex h-(--shell-header-h) shrink-0 items-center justify-between gap-3 border-b border-(--border)/80 bg-(--surface)/90 px-4 backdrop-blur-md sm:px-6">
+        <header className="safe-area-x z-30 flex h-(--shell-header-h) shrink-0 items-center justify-between gap-2 border-b border-(--border)/80 bg-(--surface)/90 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md sm:gap-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -52,7 +65,9 @@ export const AppShell = () => {
                 <p className="truncate text-sm font-medium text-(--text)">
                   {user?.displayName}
                 </p>
-                <p className="truncate text-xs text-(--muted)">{user?.email}</p>
+                <p className="hidden truncate text-xs text-(--muted) sm:block">
+                  {user?.email}
+                </p>
               </div>
             </div>
           </div>
@@ -67,7 +82,7 @@ export const AppShell = () => {
           </Button>
         </header>
 
-        <main className="surface-grid min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+        <main className="safe-area-x safe-area-b surface-grid min-h-0 flex-1 overflow-x-hidden overflow-y-auto py-5 sm:px-6 sm:py-8 lg:px-8">
           <div className="mx-auto w-full max-w-6xl animate-fade-in">
             <Outlet />
           </div>

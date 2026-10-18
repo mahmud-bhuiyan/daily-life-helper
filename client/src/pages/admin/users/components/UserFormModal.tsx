@@ -99,7 +99,7 @@ export const UserFormModal = ({
         <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
           <Button
             type="button"
-            variant="ghost"
+            variant="outline"
             onClick={handleClose}
             className="w-full sm:w-auto"
           >

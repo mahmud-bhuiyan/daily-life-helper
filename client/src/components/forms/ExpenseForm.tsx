@@ -191,7 +191,7 @@ export const ExpenseForm = ({ initial, onSubmit, onCancel }: ExpenseFormProps) =
       )}
 
       <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
-        <Button type="button" variant="ghost" onClick={onCancel} className="w-full sm:w-auto">
+        <Button type="button" variant="outline" onClick={onCancel} className="w-full sm:w-auto">
           Cancel
         </Button>
         <Button type="submit" disabled={submitting} className="w-full sm:w-auto">

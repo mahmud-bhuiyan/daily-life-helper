@@ -11,6 +11,7 @@ export const createUserSchema = z.object({
 
 export const updateUserSchema = z
   .object({
+    email: z.email().optional(),
     displayName: z.string().min(1).max(100).optional(),
     role: userRoleSchema.optional(),
     isActive: z.boolean().optional(),
@@ -18,6 +19,7 @@ export const updateUserSchema = z
   })
   .refine(
     (data) =>
+      data.email !== undefined ||
       data.displayName !== undefined ||
       data.role !== undefined ||
       data.isActive !== undefined ||

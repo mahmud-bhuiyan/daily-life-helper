@@ -11,6 +11,7 @@ import {
   PencilIcon,
   Select,
   SkeletonRows,
+  Tooltip,
   TrashIcon,
 } from "../../components/ui";
 import {
@@ -55,28 +56,32 @@ const CategoryRow = ({
       </Badge>
     </div>
     {canManage && (
-      <div className="flex shrink-0 gap-1">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="px-2.5"
-          onClick={onEdit}
-          aria-label={`Edit ${category.name}`}
-        >
-          <PencilIcon />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="px-2.5 text-(--danger) hover:border-(--danger)/30 hover:bg-(--danger)/10"
-          onClick={onDelete}
-          disabled={deleting}
-          aria-label={`Delete ${category.name}`}
-        >
-          <TrashIcon />
-        </Button>
+      <div className="flex w-full shrink-0 justify-end gap-1 sm:w-auto">
+        <Tooltip label="Edit category">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="px-2.5"
+            onClick={onEdit}
+            aria-label={`Edit ${category.name}`}
+          >
+            <PencilIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip label={deleting ? "Deleting…" : "Delete category"}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="px-2.5 text-(--danger) hover:border-(--danger)/30 hover:bg-(--danger)/10"
+            onClick={onDelete}
+            disabled={deleting}
+            aria-label={`Delete ${category.name}`}
+          >
+            <TrashIcon />
+          </Button>
+        </Tooltip>
       </div>
     )}
   </li>

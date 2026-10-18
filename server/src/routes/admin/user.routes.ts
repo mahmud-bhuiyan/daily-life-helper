@@ -34,7 +34,7 @@ adminUserRoutes.post(
 );
 
 /**
- * PATCH /api/v1/admin/users/:id — update displayName, role, isActive, or password.
+ * PATCH /api/v1/admin/users/:id — update email, displayName, role, isActive, or password.
  */
 adminUserRoutes.patch(
   '/admin/users/:id',

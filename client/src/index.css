@@ -69,6 +69,16 @@ body {
   display: flex;
   min-height: 100dvh;
   flex-direction: column;
+  overflow-x: clip;
+}
+
+@utility safe-area-x {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+@utility safe-area-b {
+  padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
 }
 
 /* Ambient page backgrounds */
